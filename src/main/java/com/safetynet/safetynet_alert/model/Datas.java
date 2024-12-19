@@ -28,7 +28,7 @@ public class Datas {
     public String toString(){
         StringBuilder sb = new StringBuilder();
 
-        sb.append("persons:\n");
+        sb.append("Persons:\n");
         for(Person person : persons){
             sb.append(person).append("\n");
         }
