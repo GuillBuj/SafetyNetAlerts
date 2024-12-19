@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class Datas {
     
+    @JsonProperty("persons")
     private List<Person> persons;
     
     @JsonProperty("firestations")
