@@ -1,8 +1,10 @@
 package com.safetynet.safetynet_alert.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
@@ -25,15 +29,16 @@ public class FireStationService {
         this.dataService = dataService;
     }
 
-    // public Set<Person> getPersonsByStation(int stationNumber){
+    public Set<Person> getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
 
-    //     Datas datas = dataService.readData();
-    //     Set <String> addresses = getAdressesByStation(datas.getFireStations(), stationNumber);
+        Datas datas = dataService.readData();
+        
+        Set <String> addresses = getAdressesByStation(datas.getFireStations(), stationNumber);
 
-    //     return datas.getPersons().stream()
-    //             .filter(person -> addresses.stream())
-
-    // }
+        return datas.getPersons().stream()
+                .filter(person -> addresses.contains(person.getAddress()))
+                .collect(Collectors.toSet());
+    }
     
     public Set<String> getAdressesByStation(List<FireStation> fireStations, int stationNumber){
         
@@ -42,4 +47,5 @@ public class FireStationService {
                 .map(FireStation::getAddress)
                 .collect(Collectors.toSet());
     }
+
 }
