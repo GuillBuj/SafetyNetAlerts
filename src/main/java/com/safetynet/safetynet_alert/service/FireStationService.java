@@ -30,16 +30,39 @@ public class FireStationService {
     public FireStationService(DataService dataService){
         this.dataService = dataService;
     }
+    
+    // public Set<Person> getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
 
-    public Set<Person> getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
+    //     Datas datas = dataService.readData();
+        
+    //     Set <String> addresses = getAdressesByStation(datas.getFireStations(), stationNumber);
+
+    //     return datas.getPersons().stream()
+    //             .filter(person -> addresses.contains(person.getAddress()))
+    //             .collect(Collectors.toSet());
+    // }
+
+    public FireStationResponse getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
 
         Datas datas = dataService.readData();
-        
-        Set <String> addresses = getAdressesByStation(datas.getFireStations(), stationNumber);
+        PersonService personService = new PersonService(dataService);
 
-        return datas.getPersons().stream()
+        Set <String> addresses = getAdressesByStation(datas.getFireStations(), stationNumber);
+        
+        Set<Person> persons = datas.getPersons().stream()
                 .filter(person -> addresses.contains(person.getAddress()))
                 .collect(Collectors.toSet());
+        int nbAdults=0, nbChildren=0;
+
+        for(Person person:persons){
+            if(personService.isAdult(person)){
+                nbAdults++;
+            } else if(personService.isChild(person)){
+                nbChildren++;
+            }
+        }
+
+        return new FireStationResponse(persons, nbAdults, nbChildren);
     }
 
     public Set<String> getAdressesByStation(List<FireStation> fireStations, int stationNumber){

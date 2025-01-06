@@ -1,6 +1,8 @@
 package com.safetynet.safetynet_alert.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,5 +50,39 @@ public class PersonService {
         }
 
         return mapPersonMedicalReport;
+    }
+
+    public Optional<MedicalRecord> getMedicalRecord(Person person) throws StreamReadException, DatabindException, IOException{
+        Datas datas = dataService.readData();
+        List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
+
+        return medicalRecords.stream()
+                .filter(record -> record.getFirstName().equals(person.getFirstName())
+                    && record.getLastName().equals(person.getLastName()))
+                .findFirst();
+    }
+
+    public int getAge(MedicalRecord medicalRecord){
+        LocalDate birthDate = medicalRecord.getBirthdate();
+        LocalDate currentDate = LocalDate.now();
+
+        return Period.between(birthDate, currentDate).getYears();
+    }
+
+    public int getAge(Person person) throws StreamReadException, DatabindException, IOException{
+        Optional<MedicalRecord> medicalRecord = getMedicalRecord(person);
+        if(medicalRecord.isPresent()){
+            return getAge(medicalRecord.get());
+        } else {
+            return -1;
+        }
+    }
+
+    public boolean isAdult(Person person) throws StreamReadException, DatabindException, IOException{
+        return getAge(person)>=18;
+    }
+
+    public boolean isChild(Person person) throws StreamReadException, DatabindException, IOException{
+        return getAge(person)<18 && getAge(person)!=-1;
     }
 }
