@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.service.DataService;
 import com.safetynet.safetynet_alert.service.FireStationService;
+import com.safetynet.safetynet_alert.service.PersonService;
 
 @SpringBootApplication
 public class SafetynetAlertApplication implements CommandLineRunner{
@@ -31,12 +32,14 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 
 		Datas datas = new Datas();
 		FireStationService fireStationService = new FireStationService(dataService);
+		PersonService personService = new PersonService(dataService);
 		try {
 			datas = dataService.readData();
 			//System.out.println(datas);
 			//System.out.println(datas.getFireStations());
 			System.out.println("- Station 4 adresses: " + fireStationService.getAdressesByStation(datas.getFireStations(), 4));
 			System.out.println("- Station 4 people: " + fireStationService.getPersonsByStation(4));
+			System.out.println("- Station 4 people + medical record: " +  personService.mapPersonToMedicalRecord(fireStationService.getPersonsByStation(4)));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

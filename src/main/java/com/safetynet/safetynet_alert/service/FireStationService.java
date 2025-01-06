@@ -18,6 +18,8 @@ import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
 
+import dto.FireStationResponse;
+
 @Service
 public class FireStationService {
 
@@ -39,7 +41,7 @@ public class FireStationService {
                 .filter(person -> addresses.contains(person.getAddress()))
                 .collect(Collectors.toSet());
     }
-    
+
     public Set<String> getAdressesByStation(List<FireStation> fireStations, int stationNumber){
         
         return fireStations.stream()
