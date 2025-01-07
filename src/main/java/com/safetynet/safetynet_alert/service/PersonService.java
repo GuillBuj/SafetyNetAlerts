@@ -6,8 +6,11 @@ import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +22,9 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
+
+import dto.ChildAlertChildDTO;
+import dto.ChildAlertResponse;
 
 @Service
 public class PersonService {
@@ -84,5 +90,51 @@ public class PersonService {
 
     public boolean isChild(Person person) throws StreamReadException, DatabindException, IOException{
         return getAge(person)<18 && getAge(person)!=-1;
+    }
+
+    public ChildAlertResponse getChildrenByAdress(String address) throws StreamReadException, DatabindException, IOException{
+        logger.info("Getting children by address({})", address);
+
+        Datas datas = dataService.readData();
+
+        Set<Person> persons = datas.getPersons().stream()
+            .filter(person -> person.getAddress().equals(address))
+            .collect(Collectors.toSet());
+
+        Set<ChildAlertChildDTO> children = persons.stream()
+            .filter(person -> {
+                try {
+                    return isChild(person);
+                } catch (IOException e) {
+                    logger.error("Error checking if person is a child");
+                    return false;
+                }
+            })
+            .map(person -> {
+                try {
+                    return new ChildAlertChildDTO(
+                            person.getFirstName(),
+                            person.getLastName(),
+                            getAge(person));
+                } catch (IOException e) {
+                    logger.error("Error calculating age");
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+        Set<Person> otherPersons = persons.stream()
+            .filter(person -> {
+                try {
+                    return !isChild(person);
+                } catch (IOException e) {
+                    logger.error("Error checking if person is a child");
+                    return false;
+                }
+            })
+            .collect(Collectors.toSet());
+        
+        return new ChildAlertResponse(children, otherPersons);
     }
 }
