@@ -36,6 +36,7 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 		try {
 			datas = dataService.readData();
 			/*System.out.println("- Station 1: " + fireStationService.getPersonsByStation(1));
+			/*System.out.println("- Station 1: " + fireStationService.getPersonsByStation(1));
 			System.out.println("- Station 2: " + fireStationService.getPersonsByStation(2));
 			System.out.println("- Station 3: " + fireStationService.getPersonsByStation(3));
 			System.out.println("- Station 4: " + fireStationService.getPersonsByStation(4));*/
