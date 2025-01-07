@@ -62,6 +62,20 @@ public class FireStationService {
         return new FireStationResponse(personsDTO, nbAdults, nbChildren);
     }
 
+    public Set<String> getPhoneNumbersByStation(int fireStationNumber) throws StreamReadException, DatabindException, IOException{
+        Datas datas = dataService.readData();
+        PersonService personService = new PersonService(dataService);
+
+        Set <String> addresses = getAdressesByStation(datas.getFireStations(), fireStationNumber);
+        Set<Person> persons = datas.getPersons().stream()
+            .filter(person -> addresses.contains(person.getAddress()))
+            .collect(Collectors.toSet());
+        
+        return persons.stream()
+            .map(person -> person.getPhone())
+            .collect(Collectors.toSet());
+    }
+
     public Set<String> getAdressesByStation(List<FireStation> fireStations, int stationNumber){
         
         return fireStations.stream()
