@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.service.FireStationService;
 
+import dto.ChildAlertResponse;
+import dto.FireResponse;
 import dto.FireStationResponse;
 
 @RestController
@@ -36,5 +38,15 @@ public class FireStationController {
         return fireStationService.getPhoneNumbersByStation(stationNumber);
     }
 
-   
+    @GetMapping("/childAlert")
+    public ChildAlertResponse getChildrenByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
+
+        return fireStationService.getChildrenByAdress(address);
+    }
+
+    @GetMapping("/fire")
+    public FireResponse getPersonsByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
+
+        return fireStationService.getPersonsByAddress(address);
+    }
 }

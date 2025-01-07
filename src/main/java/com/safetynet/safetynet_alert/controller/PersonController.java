@@ -23,15 +23,4 @@ public class PersonController {
         this.personService=personService;
     }
 
-    @GetMapping("/childAlert")
-    public ChildAlertResponse getChildrenByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
-
-        return personService.getChildrenByAdress(address);
-    }
-
-    @GetMapping("/fire")
-    public FireResponse getPersonsByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
-
-        return personService.getPersonsByAddress(address);
-    }
 }
