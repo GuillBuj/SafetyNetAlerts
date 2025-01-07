@@ -25,6 +25,8 @@ import com.safetynet.safetynet_alert.model.Person;
 
 import dto.ChildAlertChildDTO;
 import dto.ChildAlertResponse;
+import dto.FirePersonDTO;
+import dto.FireResponse;
 
 @Service
 public class PersonService {
@@ -36,27 +38,27 @@ public class PersonService {
         this.dataService = dataService;
     }
 
-    // public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
-    //     Datas datas = dataService.readData();
-    //     List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
-    //     Map<Person,MedicalRecord> mapPersonMedicalReport = new HashMap<>();
+    public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
+        Datas datas = dataService.readData();
+        List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
+        Map<Person,MedicalRecord> mapPersonMedicalReport = new HashMap<>();
 
-    //     for(Person person : persons){
-    //         Optional<MedicalRecord> medicalRecord
-    //             = medicalRecords.stream()
-    //                 .filter(record -> record.getFirstName().equals(person.getFirstName())
-    //                     && record.getLastName().equals(record.getLastName()))
-    //                 .findFirst();
+        for(Person person : persons){
+            Optional<MedicalRecord> medicalRecord
+                = medicalRecords.stream()
+                    .filter(record -> record.getFirstName().equals(person.getFirstName())
+                        && record.getLastName().equals(record.getLastName()))
+                    .findFirst();
 
-    //         if(medicalRecord.isPresent()){
-    //             mapPersonMedicalReport.put(person, medicalRecord.get());
-    //         } else{
-    //             logger.warn("No medical record(" + person.getFirstName() + " " + person.getLastName() + ")");
-    //         }
-    //     }
+            if(medicalRecord.isPresent()){
+                mapPersonMedicalReport.put(person, medicalRecord.get());
+            } else{
+                logger.warn("No medical record(" + person.getFirstName() + " " + person.getLastName() + ")");
+            }
+        }
 
-    //     return mapPersonMedicalReport;
-    // }
+        return mapPersonMedicalReport;
+    }
 
     public Optional<MedicalRecord> getMedicalRecord(Person person) throws StreamReadException, DatabindException, IOException{
         Datas datas = dataService.readData();
@@ -136,5 +138,38 @@ public class PersonService {
             .collect(Collectors.toSet());
         
         return new ChildAlertResponse(children, otherPersons);
+    }
+
+    public FireResponse getPersonsByAddress(String address) throws StreamReadException, DatabindException, IOException{
+        logger.info("Getting persons by address({})", address);
+
+        Datas datas = dataService.readData();
+        FireStationService fireStationService = new FireStationService(dataService);
+
+        Set<Person> persons = datas.getPersons().stream()
+            .filter(person -> person.getAddress().equals(address))
+            .collect(Collectors.toSet());
+
+        Map<Person, MedicalRecord> personsMap = mapPersonToMedicalRecord(persons);
+
+        Set<FirePersonDTO> personsDTO = personsMap.entrySet().stream()
+            .map(entry -> {
+                try {
+                    return new FirePersonDTO(
+                        entry.getKey().getFirstName(),
+                        entry.getKey().getLastName(),
+                        entry.getKey().getPhone(),
+                        getAge(entry.getKey()),
+                        entry.getValue().getMedications(),
+                        entry.getValue().getAllergies());
+                } catch (IOException e) {
+                    logger.error("Error processing {} {}", entry.getKey().getFirstName(), entry.getKey().getLastName());
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+        return new FireResponse(personsDTO, fireStationService.getStationByAddress(address));
     }
 }

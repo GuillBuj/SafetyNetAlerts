@@ -84,4 +84,15 @@ public class FireStationService {
                 .collect(Collectors.toSet());
     }
 
+    public int getStationByAddress(String address) throws StreamReadException, DatabindException, IOException{
+        Datas datas = dataService.readData();
+
+        FireStation fireStation = datas.getFireStations().stream()
+            .filter(station -> station.getAddress().equals(address))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("No fire station found for address: " + address));
+
+        return fireStation.getStation();
+    }
+
 }

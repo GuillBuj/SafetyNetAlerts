@@ -40,9 +40,9 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			System.out.println("- Station 2: " + fireStationService.getPersonsByStation(2));
 			System.out.println("- Station 3: " + fireStationService.getPersonsByStation(3));
 			System.out.println("- Station 4: " + fireStationService.getPersonsByStation(4));*/
-			System.out.println(personService.getChildrenByAdress("1509 Culver St"));
-			System.out.println(personService.getChildrenByAdress("892 Downing Ct"));
-			System.out.println("- Station 1 phone numbers: " + fireStationService.getPhoneNumbersByStation(1));
+			// System.out.println(personService.getChildrenByAdress("1509 Culver St"));
+			// System.out.println("- Station 1 phone numbers: " + fireStationService.getPhoneNumbersByStation(1));
+			System.out.println(personService.getPersonsByAddress("892 Downing Ct"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

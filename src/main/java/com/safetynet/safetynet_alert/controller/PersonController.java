@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.service.PersonService;
 
 import dto.ChildAlertResponse;
+import dto.FireResponse;
 
 @RestController
 public class PersonController {
@@ -21,13 +24,14 @@ public class PersonController {
     }
 
     @GetMapping("/childAlert")
-    public ChildAlertResponse getChildrenByAddress(@RequestParam String address){
-        try {
-            return personService.getChildrenByAdress(address);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+    public ChildAlertResponse getChildrenByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
+
+        return personService.getChildrenByAdress(address);
+    }
+
+    @GetMapping("/fire")
+    public FireResponse getPersonsByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
+
+        return personService.getPersonsByAddress(address);
     }
 }
