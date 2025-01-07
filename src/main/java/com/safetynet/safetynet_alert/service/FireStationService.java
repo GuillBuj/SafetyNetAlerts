@@ -31,17 +31,6 @@ public class FireStationService {
         this.dataService = dataService;
     }
     
-    // public Set<Person> getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
-
-    //     Datas datas = dataService.readData();
-        
-    //     Set <String> addresses = getAdressesByStation(datas.getFireStations(), stationNumber);
-
-    //     return datas.getPersons().stream()
-    //             .filter(person -> addresses.contains(person.getAddress()))
-    //             .collect(Collectors.toSet());
-    // }
-
     public FireStationResponse getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
 
         Datas datas = dataService.readData();
