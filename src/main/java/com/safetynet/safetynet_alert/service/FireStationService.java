@@ -18,6 +18,7 @@ import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
 
+import dto.FireStationPersonDTO;
 import dto.FireStationResponse;
 
 @Service
@@ -41,8 +42,15 @@ public class FireStationService {
         Set<Person> persons = datas.getPersons().stream()
                 .filter(person -> addresses.contains(person.getAddress()))
                 .collect(Collectors.toSet());
+        Set<FireStationPersonDTO> personsDTO = persons.stream()
+                .map(person -> new FireStationPersonDTO(
+                    person.getFirstName(),
+                    person.getLastName(),
+                    person.getAddress(),
+                    person.getPhone()))
+                .collect(Collectors.toSet());       
+        
         int nbAdults=0, nbChildren=0;
-
         for(Person person:persons){
             if(personService.isAdult(person)){
                 nbAdults++;
@@ -51,7 +59,7 @@ public class FireStationService {
             }
         }
 
-        return new FireStationResponse(persons, nbAdults, nbChildren);
+        return new FireStationResponse(personsDTO, nbAdults, nbChildren);
     }
 
     public Set<String> getAdressesByStation(List<FireStation> fireStations, int stationNumber){

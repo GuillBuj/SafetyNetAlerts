@@ -30,27 +30,27 @@ public class PersonService {
         this.dataService = dataService;
     }
 
-    public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
-        Datas datas = dataService.readData();
-        List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
-        Map<Person,MedicalRecord> mapPersonMedicalReport = new HashMap<>();
+    // public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
+    //     Datas datas = dataService.readData();
+    //     List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
+    //     Map<Person,MedicalRecord> mapPersonMedicalReport = new HashMap<>();
 
-        for(Person person : persons){
-            Optional<MedicalRecord> medicalRecord
-                = medicalRecords.stream()
-                    .filter(record -> record.getFirstName().equals(person.getFirstName())
-                        && record.getLastName().equals(record.getLastName()))
-                    .findFirst();
+    //     for(Person person : persons){
+    //         Optional<MedicalRecord> medicalRecord
+    //             = medicalRecords.stream()
+    //                 .filter(record -> record.getFirstName().equals(person.getFirstName())
+    //                     && record.getLastName().equals(record.getLastName()))
+    //                 .findFirst();
 
-            if(medicalRecord.isPresent()){
-                mapPersonMedicalReport.put(person, medicalRecord.get());
-            } else{
-                logger.warn("No medical record(" + person.getFirstName() + " " + person.getLastName() + ")");
-            }
-        }
+    //         if(medicalRecord.isPresent()){
+    //             mapPersonMedicalReport.put(person, medicalRecord.get());
+    //         } else{
+    //             logger.warn("No medical record(" + person.getFirstName() + " " + person.getLastName() + ")");
+    //         }
+    //     }
 
-        return mapPersonMedicalReport;
-    }
+    //     return mapPersonMedicalReport;
+    // }
 
     public Optional<MedicalRecord> getMedicalRecord(Person person) throws StreamReadException, DatabindException, IOException{
         Datas datas = dataService.readData();
