@@ -1,6 +1,8 @@
 package com.safetynet.safetynet_alert;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -43,6 +45,7 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			// System.out.println(personService.getChildrenByAdress("1509 Culver St"));
 			// System.out.println("- Station 1 phone numbers: " + fireStationService.getPhoneNumbersByStation(1));
 			System.out.println(fireStationService.getPersonsByAddress("892 Downing Ct"));
+			System.out.println(fireStationService.getHomesByStations(new ArrayList<>(List.of(1,4))));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

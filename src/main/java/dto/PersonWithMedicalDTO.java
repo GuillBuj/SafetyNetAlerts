@@ -2,7 +2,7 @@ package dto;
 
 import java.util.List;
 
-public record FirePersonDTO(
+public record PersonWithMedicalDTO(
     String firstName,
     String lastName,
     String phone,

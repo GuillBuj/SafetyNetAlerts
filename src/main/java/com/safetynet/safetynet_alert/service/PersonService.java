@@ -6,11 +6,8 @@ import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,10 +20,6 @@ import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
 
-import dto.ChildAlertChildDTO;
-import dto.ChildAlertResponse;
-import dto.FirePersonDTO;
-import dto.FireResponse;
 
 @Service
 public class PersonService {
