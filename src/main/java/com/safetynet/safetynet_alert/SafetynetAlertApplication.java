@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.safetynet.safetynet_alert.model.Datas;
+import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.service.DataService;
 import com.safetynet.safetynet_alert.service.FireStationService;
 import com.safetynet.safetynet_alert.service.PersonService;
@@ -48,6 +49,8 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			// System.out.println(fireStationService.getHomesByStations(new ArrayList<>(List.of(1,4))));
 			//System.out.println(personService.getPersonsByLastName("Boyd"));
 			System.out.println(personService.getEmailsByCity("Culver"));
+			personService.createPerson(new Person());
+			dataService.writeData(datas);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

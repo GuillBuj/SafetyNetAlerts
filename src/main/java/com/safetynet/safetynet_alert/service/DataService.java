@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynet_alert.model.Datas;
@@ -26,8 +27,13 @@ public class DataService {
     }
 
     public Datas readData() throws StreamReadException, DatabindException, IOException{
-        logger.debug("Read objects from json");
+        logger.debug("Read objects from json file");
         return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
+    }
+
+    public void writeData(Datas datas) throws StreamWriteException, DatabindException, IOException{
+        logger.info("Write objects to json file");
+        objectMapper.writeValue(new File(DATA_FILE_PATH), datas);
     }
 
 }

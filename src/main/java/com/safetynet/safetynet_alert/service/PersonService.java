@@ -35,6 +35,17 @@ public class PersonService {
         this.dataService = dataService;
     }
 
+    public Person createPerson(Person person) throws StreamReadException, DatabindException, IOException{
+        logger.info("Creating person({})", person);
+
+        Datas datas = dataService.readData();
+
+        datas.getPersons().add(person);
+
+        return person;
+    }
+
+
     public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
         Datas datas = dataService.readData();
         List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
