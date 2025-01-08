@@ -26,7 +26,7 @@ public class DataService {
     }
 
     public Datas readData() throws StreamReadException, DatabindException, IOException{
-        logger.info("Read objects from json");
+        logger.debug("Read objects from json");
         return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
     }
 

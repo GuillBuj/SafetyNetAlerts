@@ -6,8 +6,10 @@ import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,8 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
+
+import dto.PersonByLastNameDTO;
 
 
 @Service
@@ -87,4 +91,34 @@ public class PersonService {
         return getAge(person)<18 && getAge(person)!=-1;
     }
 
+    public List<PersonByLastNameDTO> getPersonsByLastName(String lastName) throws StreamReadException, DatabindException, IOException{
+        logger.info("Filter persons by last name({})", lastName);
+        
+        Set<Person> persons = dataService.readData().getPersons().stream()
+            .filter(person -> person.getLastName().equalsIgnoreCase(lastName)) //ignorecase pour que ça fonctionne
+            .collect(Collectors.toSet());
+
+        Map<Person,MedicalRecord> personsMap = mapPersonToMedicalRecord(persons);
+
+        List<PersonByLastNameDTO> personsDTO = personsMap.entrySet().stream()
+            .map(entry -> {
+                try {
+                    return new PersonByLastNameDTO(
+                        entry.getKey().getFirstName(),
+                        entry.getKey().getLastName(),
+                        entry.getKey().getPhone(),
+                        getAge(entry.getKey()),
+                        entry.getKey().getEmail(),
+                        entry.getValue().getMedications(),
+                        entry.getValue().getAllergies());
+                } catch (IOException e) {
+                    logger.error("Error processing {} {}", entry.getKey().getFirstName(), entry.getKey().getLastName());
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        
+        return personsDTO;
+    }
 }
