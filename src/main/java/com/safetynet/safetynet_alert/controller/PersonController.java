@@ -3,6 +3,7 @@ package com.safetynet.safetynet_alert.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,11 @@ public class PersonController {
     @GetMapping("/personInfoLastName")
     public List<PersonByLastNameDTO> getPersonsByLastName(@RequestParam String lastName) throws StreamReadException, DatabindException, IOException{
         return personService.getPersonsByLastName(lastName);
+    }
+
+    @GetMapping("/communityEmail")
+    public Set<String> getEmailsByCity(@RequestParam String city) throws StreamReadException, DatabindException, IOException{
+        return personService.getEmailsByCity(city);
     }
 
 }

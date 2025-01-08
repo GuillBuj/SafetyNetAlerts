@@ -46,7 +46,8 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			// System.out.println("- Station 1 phone numbers: " + fireStationService.getPhoneNumbersByStation(1));
 			// System.out.println(fireStationService.getPersonsByAddress("892 Downing Ct"));
 			// System.out.println(fireStationService.getHomesByStations(new ArrayList<>(List.of(1,4))));
-			System.out.println(personService.getPersonsByLastName("Boyd"));
+			//System.out.println(personService.getPersonsByLastName("Boyd"));
+			System.out.println(personService.getEmailsByCity("Culver"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -121,4 +121,16 @@ public class PersonService {
         
         return personsDTO;
     }
+
+    public Set<String> getEmailsByCity(String city) throws StreamReadException, DatabindException, IOException{
+        logger.info("Get emails by city({})", city);
+
+        Set<String> emails = dataService.readData().getPersons().stream()
+            .filter(person -> person.getCity().equalsIgnoreCase(city))
+            .map(person -> person.getEmail())
+            .collect(Collectors.toSet());
+        
+        return emails;
+    }
+
 }
