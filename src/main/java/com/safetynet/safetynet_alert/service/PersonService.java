@@ -24,6 +24,7 @@ import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
 import dto.PersonByLastNameDTO;
+import dto.PersonFullNameDTO;
 
 
 @Service
@@ -48,10 +49,32 @@ public class PersonService {
             dataRepository.writeData(datas);
         } else{
             logger.warn("Person already exists({})", person);
-        }
-        
+        } 
     }
 
+    public void deletePerson(PersonFullNameDTO personDTO) throws StreamReadException, DatabindException, IOException{
+        logger.info("Deleting person({} {})", personDTO.firstName(), personDTO.lastName());
+
+        Datas datas = dataRepository.readData();
+
+        List<Person> persons = datas.getPersons();
+
+        Optional<Person> personToDelete = persons.stream()
+            .filter(person -> person.getFirstName().equalsIgnoreCase(personDTO.firstName())
+                            && person.getLastName().equalsIgnoreCase(personDTO.lastName()))
+            .findFirst();
+
+        personToDelete.ifPresentOrElse(
+            person -> {
+                persons.remove(person);
+                try {
+                    dataRepository.writeData(datas);
+                } catch (IOException e) {
+                    logger.error("Failed to save data after deletion", e);
+                }},
+            () -> logger.warn("Person not existing({} {})", personDTO.firstName(), personDTO.lastName())
+        );
+    }
 
     public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
         Datas datas = dataRepository.readData();

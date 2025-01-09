@@ -16,6 +16,8 @@ import com.safetynet.safetynet_alert.repository.DataRepository;
 import com.safetynet.safetynet_alert.service.FireStationService;
 import com.safetynet.safetynet_alert.service.PersonService;
 
+import dto.PersonFullNameDTO;
+
 @SpringBootApplication
 public class SafetynetAlertApplication implements CommandLineRunner{
 
@@ -50,7 +52,8 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			// System.out.println(fireStationService.getHomesByStations(new ArrayList<>(List.of(1,4))));
 			//System.out.println(personService.getPersonsByLastName("Boyd"));
 			//System.out.println(personService.getEmailsByCity("Culver"));
-			personService.createPerson(new Person("zzzz","zz","zz","zz","zz","zz","zz"));
+			//personService.createPerson(new Person("zzzz","zz","zz","zz","zz","zz","zz"));
+			personService.deletePerson(new PersonFullNameDTO("zzzz", "zz"));
 			System.out.println(datas.getPersons());
 		
 			//dataRepository.writeData(datas);

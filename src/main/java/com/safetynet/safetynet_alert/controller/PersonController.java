@@ -7,8 +7,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +23,7 @@ import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.service.PersonService;
 
 import dto.PersonByLastNameDTO;
+import dto.PersonFullNameDTO;
 
 @RestController
 @RequestMapping("/person")
@@ -36,6 +39,12 @@ public class PersonController {
     @ResponseStatus(HttpStatus.CREATED)
     public void createPerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException{
         personService.createPerson(person);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void deletePerson(@RequestBody PersonFullNameDTO person) throws StreamReadException, DatabindException, IOException{
+        personService.deletePerson(person);
     }
     
     @GetMapping("/personInfoLastName")
