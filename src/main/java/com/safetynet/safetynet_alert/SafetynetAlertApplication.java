@@ -52,8 +52,9 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			// System.out.println(fireStationService.getHomesByStations(new ArrayList<>(List.of(1,4))));
 			//System.out.println(personService.getPersonsByLastName("Boyd"));
 			//System.out.println(personService.getEmailsByCity("Culver"));
-			//personService.createPerson(new Person("zzzz","zz","zz","zz","zz","zz","zz"));
-			personService.deletePerson(new PersonFullNameDTO("zzzz", "zz"));
+			personService.createPerson(new Person("zzzz","zz","zz","zz","zz","zz","zz"));
+			//personService.deletePerson(new PersonFullNameDTO("zzzz", "zz"));
+			//personService.updatePerson(new Person("zzzz","zz","boo","zz","zz","zz","boo"));
 			System.out.println(datas.getPersons());
 		
 			//dataRepository.writeData(datas);

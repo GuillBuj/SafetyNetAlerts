@@ -41,6 +41,8 @@ public class PersonController {
         personService.createPerson(person);
     }
 
+    
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deletePerson(@RequestBody PersonFullNameDTO person) throws StreamReadException, DatabindException, IOException{

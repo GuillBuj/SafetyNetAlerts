@@ -43,6 +43,7 @@ public class PersonService {
         Datas datas = dataRepository.readData();
 
         List<Person> persons = datas.getPersons();
+
         if(!persons.contains(person)){
             persons.add(person);
             datas.setPersons(persons);
@@ -50,6 +51,50 @@ public class PersonService {
         } else{
             logger.warn("Person already exists({})", person);
         } 
+    }
+
+    public void updatePerson(Person updatedPerson) throws StreamReadException, DatabindException, IOException{
+        logger.info("Updating person({} {})", updatedPerson.getFirstName(), updatedPerson.getLastName());
+        
+        Datas datas = dataRepository.readData();
+
+        List<Person> persons = datas.getPersons();
+
+        Optional<Person> personToUpdate = persons.stream()
+            .filter(person -> person.getFirstName().equalsIgnoreCase(updatedPerson.getFirstName())
+            && person.getLastName().equalsIgnoreCase(updatedPerson.getLastName()))
+            .findFirst();
+
+        personToUpdate.ifPresentOrElse(
+            person -> {
+                persons.remove(person);
+                persons.add(updatedPerson);
+                try {
+                    dataRepository.writeData(datas);
+                } catch (IOException e) {
+                    logger.error("Failed to save data after update", e);
+                }
+            },
+            () -> logger.warn("Person not existing({} {})", updatedPerson.getFirstName(), updatedPerson.getLastName())
+        );
+
+    //     personToUpdate.ifPresentOrElse(
+    //     person -> {
+    //         person.setAddress(updatedPerson.getAddress());
+    //         person.setCity(updatedPerson.getCity());
+    //         person.setZip(updatedPerson.getZip());
+    //         person.setPhone(updatedPerson.getPhone());
+    //         person.setEmail(updatedPerson.getEmail());
+            
+    //         try {
+    //             dataRepository.writeData(datas);
+    //             logger.info("Person updated: {} {}", updatedPerson.getFirstName(), updatedPerson.getLastName());
+    //         } catch (IOException e) {
+    //             logger.error("Failed to save data after update", e);
+    //         }
+    //     },
+    //     () -> logger.warn("Person not existing({} {})", updatedPerson.getFirstName(), updatedPerson.getLastName())
+    // );
     }
 
     public void deletePerson(PersonFullNameDTO personDTO) throws StreamReadException, DatabindException, IOException{
