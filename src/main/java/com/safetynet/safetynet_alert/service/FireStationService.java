@@ -19,6 +19,7 @@ import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
+import com.safetynet.safetynet_alert.repository.DataRepository;
 
 import dto.ChildAlertChildDTO;
 import dto.ChildAlertResponse;
@@ -32,17 +33,17 @@ import dto.PersonWithMedicalDTO;
 public class FireStationService {
 
     private final Logger logger = LogManager.getLogger(FireStationService.class);
-    private final DataService dataService;
+    private final DataRepository dataRepository;
 
     @Autowired
-    public FireStationService(DataService dataService){
-        this.dataService = dataService;
+    public FireStationService(DataRepository dataRepository){
+        this.dataRepository = dataRepository;
     }
     
     public FireStationResponse getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
 
-        Datas datas = dataService.readData();
-        PersonService personService = new PersonService(dataService);
+        Datas datas = dataRepository.readData();
+        PersonService personService = new PersonService(dataRepository);
 
         Set <String> addresses = getAdressesByStation(stationNumber);
         
@@ -70,8 +71,8 @@ public class FireStationService {
     }
 
     public Set<String> getPhoneNumbersByStation(int fireStationNumber) throws StreamReadException, DatabindException, IOException{
-        Datas datas = dataService.readData();
-        //PersonService personService = new PersonService(dataService);
+        Datas datas = dataRepository.readData();
+        //PersonService personService = new PersonService(dataRepository);
 
         Set <String> addresses = getAdressesByStation(fireStationNumber);
         Set<Person> persons = datas.getPersons().stream()
@@ -84,7 +85,7 @@ public class FireStationService {
     }
 
     public Set<String> getAdressesByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
-        Datas datas = dataService.readData();
+        Datas datas = dataRepository.readData();
         List<FireStation> fireStations = datas.getFireStations();
 
         return fireStations.stream()
@@ -94,7 +95,7 @@ public class FireStationService {
     }
 
     public int getStationByAddress(String address) throws StreamReadException, DatabindException, IOException{
-        Datas datas = dataService.readData();
+        Datas datas = dataRepository.readData();
 
         FireStation fireStation = datas.getFireStations().stream()
             .filter(station -> station.getAddress().equals(address))
@@ -107,8 +108,8 @@ public class FireStationService {
     public ChildAlertResponse getChildrenByAdress(String address) throws StreamReadException, DatabindException, IOException{
         logger.info("Getting children by address({})", address);
 
-        Datas datas = dataService.readData();
-        PersonService personService = new PersonService(dataService);
+        Datas datas = dataRepository.readData();
+        PersonService personService = new PersonService(dataRepository);
 
         Set<Person> persons = datas.getPersons().stream()
             .filter(person -> person.getAddress().equals(address))
@@ -154,8 +155,8 @@ public class FireStationService {
     public Set<PersonWithMedicalDTO> getPersonSetByAddress(String address) throws StreamReadException, DatabindException, IOException{
         logger.info("Getting persons(set) by address({})", address);
 
-        Datas datas = dataService.readData();
-        PersonService personService = new PersonService(dataService);
+        Datas datas = dataRepository.readData();
+        PersonService personService = new PersonService(dataRepository);
 
         Set<Person> persons = datas.getPersons().stream()
             .filter(person -> person.getAddress().equals(address))

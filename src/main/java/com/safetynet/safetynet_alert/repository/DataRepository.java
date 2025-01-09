@@ -1,11 +1,11 @@
-package com.safetynet.safetynet_alert.service;
+package com.safetynet.safetynet_alert.repository;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
@@ -13,15 +13,15 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynet_alert.model.Datas;
 
-@Service
-public class DataService {
+@Repository
+public class DataRepository {
 
-    private static final Logger logger = LogManager.getLogger(DataService.class);
+    private static final Logger logger = LogManager.getLogger(DataRepository.class);
 
     private static final String DATA_FILE_PATH = "src\\main\\resources\\data.json";
     private final ObjectMapper objectMapper;
 
-    public DataService(ObjectMapper objectMapper){
+    public DataRepository(ObjectMapper objectMapper){
         
         this.objectMapper = objectMapper;
     }

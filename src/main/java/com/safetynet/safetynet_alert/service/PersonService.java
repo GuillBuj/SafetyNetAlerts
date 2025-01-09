@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
+import com.safetynet.safetynet_alert.repository.DataRepository;
 
 import dto.PersonByLastNameDTO;
 
@@ -28,26 +29,32 @@ import dto.PersonByLastNameDTO;
 @Service
 public class PersonService {
     private final Logger logger = LogManager.getLogger(FireStationService.class);
-    private final DataService dataService;
+    private final DataRepository dataRepository;
 
     @Autowired
-    public PersonService(DataService dataService){
-        this.dataService = dataService;
+    public PersonService(DataRepository dataRepository){
+        this.dataRepository = dataRepository;
     }
 
-    public Person createPerson(Person person) throws StreamReadException, DatabindException, IOException{
+    public void createPerson(Person person) throws StreamReadException, DatabindException, IOException{
         logger.info("Creating person({})", person);
 
-        Datas datas = dataService.readData();
+        Datas datas = dataRepository.readData();
 
-        datas.getPersons().add(person);
-
-        return person;
+        List<Person> persons = datas.getPersons();
+        if(!persons.contains(person)){
+            persons.add(person);
+            datas.setPersons(persons);
+            dataRepository.writeData(datas);
+        } else{
+            logger.warn("Person already exists({})", person);
+        }
+        
     }
 
 
     public Map<Person,MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons) throws StreamReadException, DatabindException, IOException{
-        Datas datas = dataService.readData();
+        Datas datas = dataRepository.readData();
         List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
         Map<Person,MedicalRecord> mapPersonMedicalReport = new HashMap<>();
 
@@ -69,7 +76,7 @@ public class PersonService {
     }
 
     public Optional<MedicalRecord> getMedicalRecord(Person person) throws StreamReadException, DatabindException, IOException{
-        Datas datas = dataService.readData();
+        Datas datas = dataRepository.readData();
         List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
 
         return medicalRecords.stream()
@@ -105,7 +112,7 @@ public class PersonService {
     public List<PersonByLastNameDTO> getPersonsByLastName(String lastName) throws StreamReadException, DatabindException, IOException{
         logger.info("Filter persons by last name({})", lastName);
         
-        Set<Person> persons = dataService.readData().getPersons().stream()
+        Set<Person> persons = dataRepository.readData().getPersons().stream()
             .filter(person -> person.getLastName().equalsIgnoreCase(lastName)) //ignorecase pour que ça fonctionne
             .collect(Collectors.toSet());
 
@@ -136,7 +143,7 @@ public class PersonService {
     public Set<String> getEmailsByCity(String city) throws StreamReadException, DatabindException, IOException{
         logger.info("Get emails by city({})", city);
 
-        Set<String> emails = dataService.readData().getPersons().stream()
+        Set<String> emails = dataRepository.readData().getPersons().stream()
             .filter(person -> person.getCity().equalsIgnoreCase(city))
             .map(person -> person.getEmail())
             .collect(Collectors.toSet());

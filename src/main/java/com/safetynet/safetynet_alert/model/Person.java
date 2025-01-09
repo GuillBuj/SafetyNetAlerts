@@ -1,8 +1,10 @@
 package com.safetynet.safetynet_alert.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class Person {
 
     private String firstName;
@@ -12,4 +14,5 @@ public class Person {
     private String zip;
     private String phone;
     private String email;
+
 }

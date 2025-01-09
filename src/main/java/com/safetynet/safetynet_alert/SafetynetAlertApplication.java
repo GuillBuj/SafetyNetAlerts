@@ -9,21 +9,22 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.Person;
-import com.safetynet.safetynet_alert.service.DataService;
+import com.safetynet.safetynet_alert.repository.DataRepository;
 import com.safetynet.safetynet_alert.service.FireStationService;
 import com.safetynet.safetynet_alert.service.PersonService;
 
 @SpringBootApplication
 public class SafetynetAlertApplication implements CommandLineRunner{
 
-	private final DataService dataService;
+	private final DataRepository dataRepository;
 	
 	@Autowired
-	public SafetynetAlertApplication(DataService dataService){
+	public SafetynetAlertApplication(DataRepository dataRepository){
 
-		this.dataService = dataService;
+		this.dataRepository = dataRepository;
 	}
 	public static void main(String[] args) {
 
@@ -34,10 +35,10 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 	public void run(String... args){
 
 		Datas datas = new Datas();
-		FireStationService fireStationService = new FireStationService(dataService);
-		PersonService personService = new PersonService(dataService);
+		FireStationService fireStationService = new FireStationService(dataRepository);
+		PersonService personService = new PersonService(dataRepository);
 		try {
-			datas = dataService.readData();
+			datas = dataRepository.readData();
 			/*System.out.println("- Station 1: " + fireStationService.getPersonsByStation(1));
 			/*System.out.println("- Station 1: " + fireStationService.getPersonsByStation(1));
 			System.out.println("- Station 2: " + fireStationService.getPersonsByStation(2));
@@ -48,9 +49,11 @@ public class SafetynetAlertApplication implements CommandLineRunner{
 			// System.out.println(fireStationService.getPersonsByAddress("892 Downing Ct"));
 			// System.out.println(fireStationService.getHomesByStations(new ArrayList<>(List.of(1,4))));
 			//System.out.println(personService.getPersonsByLastName("Boyd"));
-			System.out.println(personService.getEmailsByCity("Culver"));
-			personService.createPerson(new Person());
-			dataService.writeData(datas);
+			//System.out.println(personService.getEmailsByCity("Culver"));
+			personService.createPerson(new Person("zzzz","zz","zz","zz","zz","zz","zz"));
+			System.out.println(datas.getPersons());
+		
+			//dataRepository.writeData(datas);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
