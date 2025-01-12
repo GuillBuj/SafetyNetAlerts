@@ -1,6 +1,5 @@
 package com.safetynet.safetynet_alert.controller;
 
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -31,31 +30,32 @@ public class PersonController {
     private final PersonService personService;
 
     @Autowired
-    public PersonController(PersonService personService){
-        this.personService=personService;
+    public PersonController(PersonService personService) {
+        this.personService = personService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createPerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException{
+    public void createPerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException {
         personService.createPerson(person);
     }
 
-    
-
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void deletePerson(@RequestBody PersonFullNameDTO person) throws StreamReadException, DatabindException, IOException{
+    public void deletePerson(@RequestBody PersonFullNameDTO person)
+            throws StreamReadException, DatabindException, IOException {
         personService.deletePerson(person);
     }
-    
+
     @GetMapping("/personInfoLastName")
-    public List<PersonByLastNameDTO> getPersonsByLastName(@RequestParam String lastName) throws StreamReadException, DatabindException, IOException{
+    public List<PersonByLastNameDTO> getPersonsByLastName(@RequestParam String lastName)
+            throws StreamReadException, DatabindException, IOException {
         return personService.getPersonsByLastName(lastName);
     }
 
     @GetMapping("/communityEmail")
-    public Set<String> getEmailsByCity(@RequestParam String city) throws StreamReadException, DatabindException, IOException{
+    public Set<String> getEmailsByCity(@RequestParam String city)
+            throws StreamReadException, DatabindException, IOException {
         return personService.getEmailsByCity(city);
     }
 
