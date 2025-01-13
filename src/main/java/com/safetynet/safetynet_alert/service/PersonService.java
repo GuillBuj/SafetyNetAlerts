@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.exception.PersonAlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.PersonNotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
@@ -37,19 +39,22 @@ public class PersonService {
         this.dataRepository = dataRepository;
     }
 
-    public void createPerson(Person person) throws StreamReadException, DatabindException, IOException {
-        logger.info("Creating person({})", person);
+    public void createPerson(Person personToCreate) throws StreamReadException, DatabindException, IOException {
+        logger.info("Creating person({})", personToCreate);
 
         Datas datas = dataRepository.readData();
 
         List<Person> persons = datas.getPersons();
+        PersonFullNameDTO personFullNameDTO
+            = new PersonFullNameDTO(personToCreate.getFirstName(), personToCreate.getLastName());
 
-        if (!persons.contains(person)) {
-            persons.add(person);
+        if (!personFullNameDTO.exists(persons)) {
+            persons.add(personToCreate);
             datas.setPersons(persons);
             dataRepository.writeData(datas);
         } else {
-            logger.warn("Person already exists({})", person);
+            logger.warn("Person already exists({})", personToCreate);
+            throw new PersonAlreadyExistsException("Person already exists (" + personFullNameDTO + ")");
         }
     }
 
@@ -59,44 +64,26 @@ public class PersonService {
         Datas datas = dataRepository.readData();
 
         List<Person> persons = datas.getPersons();
+        PersonFullNameDTO personToUpdateFullNameDTO
+            = new PersonFullNameDTO(updatedPerson.getFirstName(), updatedPerson.getLastName());
 
-        Optional<Person> personToUpdate = persons.stream()
-                .filter(person -> person.getFirstName().equalsIgnoreCase(updatedPerson.getFirstName())
-                        && person.getLastName().equalsIgnoreCase(updatedPerson.getLastName()))
-                .findFirst();
+        Optional<Person> personToUpdate = personToUpdateFullNameDTO.findPerson(persons);
 
         personToUpdate.ifPresentOrElse(
                 person -> {
                     persons.remove(person);
                     persons.add(updatedPerson);
+                    datas.setPersons(persons);
                     try {
                         dataRepository.writeData(datas);
                     } catch (IOException e) {
                         logger.error("Failed to save data after update", e);
                     }
                 },
-                () -> logger.warn("Person not existing({} {})", updatedPerson.getFirstName(),
-                        updatedPerson.getLastName()));
-
-        // personToUpdate.ifPresentOrElse(
-        // person -> {
-        // person.setAddress(updatedPerson.getAddress());
-        // person.setCity(updatedPerson.getCity());
-        // person.setZip(updatedPerson.getZip());
-        // person.setPhone(updatedPerson.getPhone());
-        // person.setEmail(updatedPerson.getEmail());
-
-        // try {
-        // dataRepository.writeData(datas);
-        // logger.info("Person updated: {} {}", updatedPerson.getFirstName(),
-        // updatedPerson.getLastName());
-        // } catch (IOException e) {
-        // logger.error("Failed to save data after update", e);
-        // }
-        // },
-        // () -> logger.warn("Person not existing({} {})", updatedPerson.getFirstName(),
-        // updatedPerson.getLastName())
-        // );
+                () -> {logger.warn("Person not existing({} {})",
+                        updatedPerson.getFirstName(), updatedPerson.getLastName());
+                        throw new PersonNotFoundException("Person not found (" + personToUpdateFullNameDTO + ")");
+                    });
     }
 
     public void deletePerson(PersonFullNameDTO personDTO) throws StreamReadException, DatabindException, IOException {
@@ -105,11 +92,10 @@ public class PersonService {
         Datas datas = dataRepository.readData();
 
         List<Person> persons = datas.getPersons();
+        PersonFullNameDTO personFullNameDTO
+            = new PersonFullNameDTO(personDTO.firstName(), personDTO.lastName());
 
-        Optional<Person> personToDelete = persons.stream()
-                .filter(person -> person.getFirstName().equalsIgnoreCase(personDTO.firstName())
-                        && person.getLastName().equalsIgnoreCase(personDTO.lastName()))
-                .findFirst();
+        Optional<Person> personToDelete = personFullNameDTO.findPerson(persons);
 
         personToDelete.ifPresentOrElse(
                 person -> {
@@ -122,7 +108,10 @@ public class PersonService {
                         logger.error("Failed to save data after deletion", e);
                     }
                 },
-                () -> logger.warn("Person not existing({} {})", personDTO.firstName(), personDTO.lastName()));
+                () -> {logger.warn("Person not existing({} {})",
+                            personDTO.firstName(), personDTO.lastName());
+                        throw new PersonNotFoundException("Person not found (" + personFullNameDTO + ")");
+                    });
     }
 
     public Map<Person, MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons)

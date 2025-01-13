@@ -7,17 +7,21 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.exception.PersonAlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.PersonNotFoundException;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.service.PersonService;
 
@@ -40,6 +44,12 @@ public class PersonController {
         personService.createPerson(person);
     }
 
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void updatedPerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException{
+        personService.updatePerson(person);
+    }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deletePerson(@RequestBody PersonFullNameDTO person)
@@ -59,4 +69,15 @@ public class PersonController {
         return personService.getEmailsByCity(city);
     }
 
+    @ExceptionHandler(PersonAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handlePersonAlreadyExistsException(PersonAlreadyExistsException e){
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(PersonNotFoundException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handlePersonNotFound(PersonNotFoundException e){
+        return e.getMessage();
+    }
 }
