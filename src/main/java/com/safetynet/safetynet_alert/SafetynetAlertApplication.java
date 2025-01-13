@@ -42,25 +42,7 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 		PersonService personService = new PersonService(dataRepository);
 		try {
 			datas = dataRepository.readData();
-			// System.out.println("- Station 4: " +
-			// fireStationService.getPersonsByStation(4));
-			// System.out.println(personService.getChildrenByAdress("1509 Culver St"));
-			// System.out.println("- Station 1 phone numbers: " +
-			// fireStationService.getPhoneNumbersByStation(1));
-			// System.out.println(fireStationService.getPersonsByAddress("892 Downing Ct"));
-			// System.out.println(fireStationService.getHomesByStations(new
-			// ArrayList<>(List.of(1,4))));
-			// System.out.println(personService.getPersonsByLastName("Boyd"));
-			// System.out.println(personService.getEmailsByCity("Culver"));
-			// personService.createPerson(new Person("zzzz", "zz", "zz", "zz", "zz", "zz",
-			// "zz"));
-			//personService.deletePerson(new PersonFullNameDTO("zzzz", "zz"));
-			// personService.updatePerson(new
-			// 	Person("zzzz","zz","boo","zz","zz","zz","boo"));
-			//personService.deletePerson(new PersonFullNameDTO("zzzz", "zz"));
-			//System.out.println(datas.getPersons());
-			// personService.createPerson(new Person("zz", "zz", "zz", "zz", "zz", "zz",
-			// "zz"));
+			
 			System.out.println(datas.getMedicalRecords());
 
 			//dataRepository.writeData(datas);

@@ -33,10 +33,12 @@ import dto.PersonFullNameDTO;
 public class PersonService {
     private final Logger logger = LogManager.getLogger(FireStationService.class);
     private final DataRepository dataRepository;
+    private final MedicalRecordService medicalRecordService;
 
     @Autowired
     public PersonService(DataRepository dataRepository) {
         this.dataRepository = dataRepository;
+        this.medicalRecordService = new MedicalRecordService(dataRepository);
     }
 
     public void createPerson(Person personToCreate) throws StreamReadException, DatabindException, IOException {
@@ -92,25 +94,33 @@ public class PersonService {
         Datas datas = dataRepository.readData();
 
         List<Person> persons = datas.getPersons();
-        PersonFullNameDTO personFullNameDTO
-            = new PersonFullNameDTO(personDTO.firstName(), personDTO.lastName());
-
-        Optional<Person> personToDelete = personFullNameDTO.findPerson(persons);
+        Optional<Person> personToDelete = personDTO.findPerson(persons);
 
         personToDelete.ifPresentOrElse(
                 person -> {
                     persons.remove(person);
-                    // TODO delete medrecord
                     datas.setPersons(persons);
+
                     try {
                         dataRepository.writeData(datas);
+                        logger.info("Data saved after deletion");
                     } catch (IOException e) {
                         logger.error("Failed to save data after deletion", e);
                     }
+
+                    List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
+                    if(personDTO.existsInMeds(medicalRecords)){
+                        try {
+                            medicalRecordService.deleteMedicalRecord(personDTO);
+                            logger.info("Successfully deleted medical record for person({})", personDTO);
+                        } catch (IOException e) {
+                            logger.error("Failed to delete medical record for person({} {})", personDTO.firstName(), personDTO.lastName());
+                        }
+                    };
                 },
                 () -> {logger.warn("Person not found({} {})",
                             personDTO.firstName(), personDTO.lastName());
-                        throw new NotFoundException("Person not found (" + personFullNameDTO + ")");
+                        throw new NotFoundException("Person not found (" + personDTO + ")");
                     });
     }
 

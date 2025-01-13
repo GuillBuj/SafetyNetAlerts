@@ -44,7 +44,7 @@ public class MedicalRecordService {
             dataRepository.writeData(datas);
         } else {
             logger.warn("Medical record already exists({})", medicalRecordToCreate);
-            throw new AlreadyExistsException("Medical already exists (" + personFullNameDTO + ")");
+            throw new AlreadyExistsException("Medical record already exists (" + personFullNameDTO + ")");
         }
     }
 
@@ -54,11 +54,9 @@ public class MedicalRecordService {
         Datas datas = dataRepository.readData();
 
         List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
-        PersonFullNameDTO personFullNameDTO 
-            = new PersonFullNameDTO(medicalRecordDTO.firstName(), medicalRecordDTO.lastName());
-
-        Optional<MedicalRecord> medicalRecordToDelete = personFullNameDTO.findMedicalRecord(medicalRecords);
-        //if(medicalRecordToDeleteDTO.exists())
+       
+        Optional<MedicalRecord> medicalRecordToDelete = medicalRecordDTO.findMedicalRecord(medicalRecords);
+        
         medicalRecordToDelete.ifPresentOrElse(
             medicalRecord ->  {
                 medicalRecords.remove(medicalRecord);
@@ -71,11 +69,8 @@ public class MedicalRecordService {
             },
             () -> {
                 logger.warn("Medical record not found ({} {})", medicalRecordDTO.firstName(), medicalRecordDTO.lastName());
-                throw new NotFoundException("Medical record not found (" + personFullNameDTO + ")");
+                throw new NotFoundException("Medical record not found (" + medicalRecordDTO + ")");
             }
         );
-
-        
-
     }
 }
