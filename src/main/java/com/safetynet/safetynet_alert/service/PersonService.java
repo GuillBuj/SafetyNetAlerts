@@ -108,7 +108,7 @@ public class PersonService {
                         logger.error("Failed to save data after deletion", e);
                     }
                 },
-                () -> {logger.warn("Person not existing({} {})",
+                () -> {logger.warn("Person not found({} {})",
                             personDTO.firstName(), personDTO.lastName());
                         throw new NotFoundException("Person not found (" + personFullNameDTO + ")");
                     });

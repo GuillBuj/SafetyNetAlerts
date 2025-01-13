@@ -58,10 +58,10 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 			// personService.updatePerson(new
 			// 	Person("zzzz","zz","boo","zz","zz","zz","boo"));
 			//personService.deletePerson(new PersonFullNameDTO("zzzz", "zz"));
-			System.out.println(datas.getPersons());
+			//System.out.println(datas.getPersons());
 			// personService.createPerson(new Person("zz", "zz", "zz", "zz", "zz", "zz",
 			// "zz"));
-			//System.out.println(datas.getMedicalRecords());
+			System.out.println(datas.getMedicalRecords());
 
 			//dataRepository.writeData(datas);
 		} catch (IOException e) {

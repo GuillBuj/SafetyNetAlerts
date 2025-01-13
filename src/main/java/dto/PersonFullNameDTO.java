@@ -14,7 +14,7 @@ public record PersonFullNameDTO(
         return persons.stream()
                     .filter(person -> person.getFirstName().equalsIgnoreCase(firstName)
                             && person.getLastName().equalsIgnoreCase(lastName))
-                    .findAny()
+                    .findFirst()
                     .isPresent();
     }
 
@@ -29,7 +29,14 @@ public record PersonFullNameDTO(
         return medicalRecords.stream()
                     .filter(person -> person.getFirstName().equalsIgnoreCase(firstName)
                             && person.getLastName().equalsIgnoreCase(lastName))
-                    .findAny()
+                    .findFirst()
                     .isPresent();
+    }
+
+    public Optional<MedicalRecord> findMedicalRecord(List<MedicalRecord> medicalRecords){
+        return medicalRecords.stream()
+                    .filter(medicalRecord -> medicalRecord.getFirstName().equalsIgnoreCase(firstName)
+                            && medicalRecord.getLastName().equalsIgnoreCase(lastName))
+                    .findFirst();   
     }
 }
