@@ -3,6 +3,7 @@ package dto;
 import java.util.List;
 import java.util.Optional;
 
+import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
 
 public record PersonFullNameDTO(
@@ -22,5 +23,13 @@ public record PersonFullNameDTO(
                     .filter(person -> person.getFirstName().equalsIgnoreCase(firstName)
                             && person.getLastName().equalsIgnoreCase(lastName))
                     .findFirst();  
+    }
+
+    public boolean existsInMeds(List<MedicalRecord> medicalRecords){
+        return medicalRecords.stream()
+                    .filter(person -> person.getFirstName().equalsIgnoreCase(firstName)
+                            && person.getLastName().equalsIgnoreCase(lastName))
+                    .findAny()
+                    .isPresent();
     }
 }

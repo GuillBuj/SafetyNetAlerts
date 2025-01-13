@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
-import com.safetynet.safetynet_alert.exception.PersonAlreadyExistsException;
-import com.safetynet.safetynet_alert.exception.PersonNotFoundException;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
@@ -54,7 +54,7 @@ public class PersonService {
             dataRepository.writeData(datas);
         } else {
             logger.warn("Person already exists({})", personToCreate);
-            throw new PersonAlreadyExistsException("Person already exists (" + personFullNameDTO + ")");
+            throw new AlreadyExistsException("Person already exists (" + personFullNameDTO + ")");
         }
     }
 
@@ -82,7 +82,7 @@ public class PersonService {
                 },
                 () -> {logger.warn("Person not existing({} {})",
                         updatedPerson.getFirstName(), updatedPerson.getLastName());
-                        throw new PersonNotFoundException("Person not found (" + personToUpdateFullNameDTO + ")");
+                        throw new NotFoundException("Person not found (" + personToUpdateFullNameDTO + ")");
                     });
     }
 
@@ -110,7 +110,7 @@ public class PersonService {
                 },
                 () -> {logger.warn("Person not existing({} {})",
                             personDTO.firstName(), personDTO.lastName());
-                        throw new PersonNotFoundException("Person not found (" + personFullNameDTO + ")");
+                        throw new NotFoundException("Person not found (" + personFullNameDTO + ")");
                     });
     }
 

@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
-import com.safetynet.safetynet_alert.exception.PersonAlreadyExistsException;
-import com.safetynet.safetynet_alert.exception.PersonNotFoundException;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.service.PersonService;
 
@@ -69,15 +69,15 @@ public class PersonController {
         return personService.getEmailsByCity(city);
     }
 
-    @ExceptionHandler(PersonAlreadyExistsException.class)
+    @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handlePersonAlreadyExistsException(PersonAlreadyExistsException e){
+    public String handlePersonAlreadyExistsException(AlreadyExistsException e){
         return e.getMessage();
     }
 
-    @ExceptionHandler(PersonNotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handlePersonNotFound(PersonNotFoundException e){
+    public String handlePersonNotFound(NotFoundException e){
         return e.getMessage();
     }
 }

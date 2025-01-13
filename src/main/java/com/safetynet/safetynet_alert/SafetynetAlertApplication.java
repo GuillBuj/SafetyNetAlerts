@@ -61,7 +61,7 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 			System.out.println(datas.getPersons());
 			// personService.createPerson(new Person("zz", "zz", "zz", "zz", "zz", "zz",
 			// "zz"));
-			// System.out.println(datas.getPersons());
+			//System.out.println(datas.getMedicalRecords());
 
 			//dataRepository.writeData(datas);
 		} catch (IOException e) {

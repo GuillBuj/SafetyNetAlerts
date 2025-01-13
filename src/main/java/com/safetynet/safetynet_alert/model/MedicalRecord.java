@@ -14,7 +14,6 @@ public class MedicalRecord {
     private String lastName;
     @JsonFormat(pattern = "MM/dd/yyyy")
     private LocalDate birthdate;
-    //private String birthdate;
     private List<String> medications;
     private List<String> allergies;
 }
