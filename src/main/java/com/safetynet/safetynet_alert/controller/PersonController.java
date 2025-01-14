@@ -46,7 +46,7 @@ public class PersonController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updatedPerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException{
+    public void updatePerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException{
         personService.updatePerson(person);
     }
 

@@ -48,6 +48,35 @@ public class MedicalRecordService {
         }
     }
 
+    public void updateMedicalRecord(MedicalRecord updatedMedicalRecord) throws StreamReadException, DatabindException, IOException{
+        logger.info("Updating medical record({})" , updatedMedicalRecord);
+
+        Datas datas = dataRepository.readData();
+
+        List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
+        PersonFullNameDTO medicalRecordToUpdateDTO
+            = new PersonFullNameDTO(updatedMedicalRecord.getFirstName(),updatedMedicalRecord.getLastName());
+
+        Optional<MedicalRecord> medicalRecordToUpdate = medicalRecordToUpdateDTO.findMedicalRecord(medicalRecords);
+
+        medicalRecordToUpdate.ifPresentOrElse(
+            medicalRecord -> {
+                medicalRecords.remove(medicalRecord);
+                medicalRecords.add(updatedMedicalRecord);
+                datas.setMedicalRecords(medicalRecords);
+                try {
+                    dataRepository.writeData(datas);
+                } catch (IOException e) {
+                    logger.error("Failed to save data after update", e);
+                }
+
+            },
+            () -> {
+                logger.warn("Medical record not found ({} {})", medicalRecordToUpdateDTO.firstName(), medicalRecordToUpdateDTO.lastName());
+                throw new NotFoundException("Medical record not found (" + medicalRecordToUpdateDTO + ")");}
+            );
+    }
+
     public void deleteMedicalRecord(PersonFullNameDTO medicalRecordDTO) throws StreamReadException, DatabindException, IOException{
         logger.info("Deleting medical record ({})", medicalRecordDTO);
 
