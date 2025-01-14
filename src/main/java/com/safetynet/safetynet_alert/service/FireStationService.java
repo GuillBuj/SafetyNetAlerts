@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
@@ -40,6 +43,55 @@ public class FireStationService {
         this.dataRepository = dataRepository;
     }
     
+    public void createFireStation(FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+        logger.info("Creating firestation-address mapping({})", fireStation);
+
+        Datas datas = dataRepository.readData();
+
+        List<FireStation> fireStations = datas.getFireStations();
+
+        //check if mapping for this address already exists
+        if(!isMapped(fireStation.getAddress())){
+                fireStations.add(fireStation);
+                datas.setFireStations(fireStations);
+                dataRepository.writeData(datas);
+        } else{
+            logger.warn("Mapping for this address already exists({})", fireStation);
+            throw new AlreadyExistsException("Mapping for this address already exists: " + fireStation);
+        }  
+    }
+    
+    public void deleteFireStation(String address) throws StreamReadException, DatabindException, IOException{
+        logger.info("Deleting mapping for address {}", address);
+
+        Datas datas = dataRepository.readData();
+
+        List<FireStation> fireStations = datas.getFireStations();
+
+        if(isMapped(address)){
+            fireStations.removeIf(fireStation -> fireStation.getAddress().equalsIgnoreCase(address));            
+            datas.setFireStations(fireStations);
+            dataRepository.writeData(datas);
+        } else{
+            logger.warn("Mapping for this address not found ({})", address);
+            throw new NotFoundException("Mapping for this address not found (" + address + ")");
+        } 
+    }
+
+    //TODO par adresse aussi
+    public void deleteFireStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
+        logger.info("Deleting mapping for firestation number {}", stationNumber);
+
+        Datas datas = dataRepository.readData();
+
+        List<FireStation> fireStations = datas.getFireStations();
+
+        fireStations.removeIf(fireStation -> fireStation.getStation() == stationNumber);
+
+        datas.setFireStations(fireStations);
+        dataRepository.writeData(datas);
+    }
+
     public FireStationResponse getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
 
         Datas datas = dataRepository.readData();
@@ -225,6 +277,10 @@ public class FireStationService {
             return floods;
     }
 
-    
+    public boolean isMapped(String address) throws StreamReadException, DatabindException, IOException{
+        return dataRepository.readData().getFireStations()
+                .stream().map(FireStation::getAddress).toList()
+                .contains(address);
+    }
 
 }

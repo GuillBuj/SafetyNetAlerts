@@ -71,13 +71,13 @@ public class PersonController {
 
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handlePersonAlreadyExistsException(AlreadyExistsException e){
+    public String handleAlreadyExistsException(AlreadyExistsException e){
         return e.getMessage();
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handlePersonNotFound(NotFoundException e){
+    public String handleNotFound(NotFoundException e){
         return e.getMessage();
     }
 }
