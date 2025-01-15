@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -42,6 +43,12 @@ public class FireStationController {
         fireStationService.createFireStation(fireStation);
     }
 
+    @PutMapping("/firestation")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateFireStation(@RequestBody FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+        fireStationService.updateFireStation(fireStation);
+    }
+    
     @DeleteMapping("/firestation")
     @ResponseStatus(HttpStatus.OK)
     public void deleteFireStation(@RequestParam(required = false) Integer stationNumber,

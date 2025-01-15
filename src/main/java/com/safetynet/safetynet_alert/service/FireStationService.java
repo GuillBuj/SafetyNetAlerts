@@ -43,6 +43,7 @@ public class FireStationService {
         this.dataRepository = dataRepository;
     }
     
+    //TODO mettre ds le if
     public void createFireStation(FireStation fireStation) throws StreamReadException, DatabindException, IOException{
         logger.info("Creating firestation-address mapping({})", fireStation);
 
@@ -61,6 +62,23 @@ public class FireStationService {
         }  
     }
     
+    public void updateFireStation(FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+        logger.info("Updating firestation-address mapping({})", fireStation);
+
+        if(isMapped(fireStation.getAddress())){
+            Datas datas = dataRepository.readData();
+            List<FireStation> fireStations = datas.getFireStations();
+            fireStations.removeIf(fireStationTest -> fireStationTest.getAddress().equals(fireStation.getAddress()));
+            fireStations.add(fireStation);
+            datas.setFireStations(fireStations);
+            dataRepository.writeData(datas);
+        } else{
+            logger.warn("Mapping for this address not found ({})", fireStation.getAddress());
+            throw new NotFoundException("Mapping for this address not found (" + fireStation.getAddress() + ")");
+        }
+        
+    }
+
     public void deleteFireStation(String address) throws StreamReadException, DatabindException, IOException{
         logger.info("Deleting mapping for address {}", address);
 
@@ -78,7 +96,6 @@ public class FireStationService {
         } 
     }
 
-    //TODO par adresse aussi
     public void deleteFireStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
         logger.info("Deleting mapping for firestation number {}", stationNumber);
 
