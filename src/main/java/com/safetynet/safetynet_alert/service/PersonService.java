@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
@@ -42,7 +41,7 @@ public class PersonService {
     }
 
     public void createPerson(Person personToCreate) throws StreamReadException, DatabindException, IOException {
-        logger.info("Creating person({})", personToCreate);
+        logger.debug("Creating person({})", personToCreate);
 
         Datas datas = dataRepository.readData();
 
@@ -54,14 +53,15 @@ public class PersonService {
             persons.add(personToCreate);
             datas.setPersons(persons);
             dataRepository.writeData(datas);
+            logger.info("Person created ({})", personToCreate);
         } else {
-            logger.warn("Person already exists({})", personToCreate);
+            logger.error("Person already exists({})", personToCreate);
             throw new AlreadyExistsException("Person already exists (" + personFullNameDTO + ")");
         }
     }
 
     public void updatePerson(Person updatedPerson) throws StreamReadException, DatabindException, IOException {
-        logger.info("Updating person({} {})", updatedPerson.getFirstName(), updatedPerson.getLastName());
+        logger.debug("Updating person({} {})", updatedPerson.getFirstName(), updatedPerson.getLastName());
 
         Datas datas = dataRepository.readData();
 
@@ -78,18 +78,19 @@ public class PersonService {
                     datas.setPersons(persons);
                     try {
                         dataRepository.writeData(datas);
+                        logger.info("Person updated ({})", personToUpdateFullNameDTO);
                     } catch (IOException e) {
                         logger.error("Failed to save data after update", e);
                     }
                 },
-                () -> {logger.warn("Person not existing({} {})",
+                () -> {logger.error("Person not existing({} {})",
                         updatedPerson.getFirstName(), updatedPerson.getLastName());
                         throw new NotFoundException("Person not found (" + personToUpdateFullNameDTO + ")");
                     });
     }
 
     public void deletePerson(PersonFullNameDTO personDTO) throws StreamReadException, DatabindException, IOException {
-        logger.info("Deleting person({} {})", personDTO.firstName(), personDTO.lastName());
+        logger.debug("Deleting person({} {})", personDTO.firstName(), personDTO.lastName());
 
         Datas datas = dataRepository.readData();
 
@@ -103,7 +104,7 @@ public class PersonService {
 
                     try {
                         dataRepository.writeData(datas);
-                        logger.info("Data saved after deletion");
+                        logger.info("Person deleted ({})", personDTO);
                     } catch (IOException e) {
                         logger.error("Failed to save data after deletion", e);
                     }
@@ -112,16 +113,16 @@ public class PersonService {
                     if(personDTO.existsInMeds(medicalRecords)){
                         try {
                             medicalRecordService.deleteMedicalRecord(personDTO);
-                            logger.info("Successfully deleted medical record for person({})", personDTO);
+                            logger.info("Medical record deleted for person({})", personDTO);
                         } catch (IOException e) {
                             logger.error("Failed to delete medical record for person({} {})", personDTO.firstName(), personDTO.lastName());
                         }
                     };
                 },
-                () -> {logger.warn("Person not found({} {})",
-                            personDTO.firstName(), personDTO.lastName());
+                () -> {
+                        logger.error("Person not found({} {})", personDTO.firstName(), personDTO.lastName());
                         throw new NotFoundException("Person not found (" + personDTO + ")");
-                    });
+                });
     }
 
     public Map<Person, MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons)
@@ -213,13 +214,14 @@ public class PersonService {
     }
 
     public Set<String> getEmailsByCity(String city) throws StreamReadException, DatabindException, IOException {
-        logger.info("Get emails by city({})", city);
+        logger.debug("Get emails by city({})", city);
 
         Set<String> emails = dataRepository.readData().getPersons().stream()
                 .filter(person -> person.getCity().equalsIgnoreCase(city))
                 .map(person -> person.getEmail())
                 .collect(Collectors.toSet());
 
+        logger.info("List of email by city ({}) : ", city, emails);
         return emails;
     }
 
