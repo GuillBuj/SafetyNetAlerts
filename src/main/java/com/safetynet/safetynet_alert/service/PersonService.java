@@ -40,7 +40,7 @@ public class PersonService {
         this.medicalRecordService = new MedicalRecordService(dataRepository);
     }
 
-    public void createPerson(Person personToCreate) throws StreamReadException, DatabindException, IOException {
+    public void createPerson(Person personToCreate){
         logger.debug("Creating person({})", personToCreate);
 
         Datas datas = dataRepository.readData();
@@ -60,7 +60,7 @@ public class PersonService {
         }
     }
 
-    public void updatePerson(Person updatedPerson) throws StreamReadException, DatabindException, IOException {
+    public void updatePerson(Person updatedPerson){
         logger.debug("Updating person({} {})", updatedPerson.getFirstName(), updatedPerson.getLastName());
 
         Datas datas = dataRepository.readData();
@@ -76,12 +76,8 @@ public class PersonService {
                     persons.remove(person);
                     persons.add(updatedPerson);
                     datas.setPersons(persons);
-                    try {
-                        dataRepository.writeData(datas);
-                        logger.info("Person updated ({})", personToUpdateFullNameDTO);
-                    } catch (IOException e) {
-                        logger.error("Failed to save data after update", e);
-                    }
+                    dataRepository.writeData(datas);
+                    logger.info("Person updated ({})", personToUpdateFullNameDTO);
                 },
                 () -> {logger.error("Person not existing({} {})",
                         updatedPerson.getFirstName(), updatedPerson.getLastName());
@@ -89,7 +85,7 @@ public class PersonService {
                     });
     }
 
-    public void deletePerson(PersonFullNameDTO personDTO) throws StreamReadException, DatabindException, IOException {
+    public void deletePerson(PersonFullNameDTO personDTO){
         logger.debug("Deleting person({} {})", personDTO.firstName(), personDTO.lastName());
 
         Datas datas = dataRepository.readData();
@@ -102,31 +98,21 @@ public class PersonService {
                     persons.remove(person);
                     datas.setPersons(persons);
 
-                    try {
-                        dataRepository.writeData(datas);
-                        logger.info("Person deleted ({})", personDTO);
-                    } catch (IOException e) {
-                        logger.error("Failed to save data after deletion", e);
-                    }
+                    dataRepository.writeData(datas);
+                    logger.info("Person deleted ({})", personDTO);
 
                     List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
                     if(personDTO.existsInMeds(medicalRecords)){
-                        try {
                             medicalRecordService.deleteMedicalRecord(personDTO);
                             logger.info("Medical record deleted for person({})", personDTO);
-                        } catch (IOException e) {
-                            logger.error("Failed to delete medical record for person({} {})", personDTO.firstName(), personDTO.lastName());
-                        }
-                    };
-                },
+                    }},
                 () -> {
                         logger.error("Person not found({} {})", personDTO.firstName(), personDTO.lastName());
                         throw new NotFoundException("Person not found (" + personDTO + ")");
                 });
     }
 
-    public Map<Person, MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons)
-            throws StreamReadException, DatabindException, IOException {
+    public Map<Person, MedicalRecord> mapPersonToMedicalRecord(Set<Person> persons){
         Datas datas = dataRepository.readData();
         List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
         Map<Person, MedicalRecord> mapPersonMedicalReport = new HashMap<>();
@@ -147,8 +133,7 @@ public class PersonService {
         return mapPersonMedicalReport;
     }
 
-    public Optional<MedicalRecord> getMedicalRecord(Person person)
-            throws StreamReadException, DatabindException, IOException {
+    public Optional<MedicalRecord> getMedicalRecord(Person person){
         Datas datas = dataRepository.readData();
         List<MedicalRecord> medicalRecords = datas.getMedicalRecords();
 
@@ -162,7 +147,7 @@ public class PersonService {
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
 
-    public int getAge(Person person) throws StreamReadException, DatabindException, IOException {
+    public int getAge(Person person){
         Optional<MedicalRecord> medicalRecord = getMedicalRecord(person);
         if (medicalRecord.isPresent()) {
             return getAge(medicalRecord.get().getBirthdate());
@@ -192,7 +177,6 @@ public class PersonService {
 
         List<PersonByLastNameDTO> personsDTO = personsMap.entrySet().stream()
                 .map(entry -> {
-                    try {
                         return new PersonByLastNameDTO(
                                 entry.getKey().getFirstName(),
                                 entry.getKey().getLastName(),
@@ -201,11 +185,6 @@ public class PersonService {
                                 entry.getKey().getEmail(),
                                 entry.getValue().getMedications(),
                                 entry.getValue().getAllergies());
-                    } catch (IOException e) {
-                        logger.error("Error processing {} {}", entry.getKey().getFirstName(),
-                                entry.getKey().getLastName());
-                        return null;
-                    }
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -213,7 +192,7 @@ public class PersonService {
         return personsDTO;
     }
 
-    public Set<String> getEmailsByCity(String city) throws StreamReadException, DatabindException, IOException {
+    public Set<String> getEmailsByCity(String city){
         logger.debug("Get emails by city({})", city);
 
         Set<String> emails = dataRepository.readData().getPersons().stream()

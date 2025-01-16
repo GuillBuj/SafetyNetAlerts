@@ -42,7 +42,7 @@ public class FireStationService {
         this.dataRepository = dataRepository;
     }
     
-    public void createFireStation(FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+    public void createFireStation(FireStation fireStation){
         logger.debug("Creating firestation-address mapping({})", fireStation);
 
         if(!isMapped(fireStation.getAddress())){
@@ -58,7 +58,7 @@ public class FireStationService {
         }  
     }
     
-    public void updateFireStation(FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+    public void updateFireStation(FireStation fireStation){
         logger.debug("Updating firestation-address mapping({})", fireStation);
 
         if(isMapped(fireStation.getAddress())){
@@ -75,7 +75,7 @@ public class FireStationService {
         }   
     }
 
-    public void deleteFireStation(String address) throws StreamReadException, DatabindException, IOException{
+    public void deleteFireStation(String address){
         logger.debug("Deleting mapping for address {}", address);
 
         if(isMapped(address)){
@@ -91,7 +91,7 @@ public class FireStationService {
         } 
     }
 
-    public void deleteFireStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
+    public void deleteFireStation(int stationNumber){
         logger.debug("Deleting mapping for firestation number {}", stationNumber);
         
         if(getAdressesByStation(stationNumber)!=null){
@@ -138,7 +138,7 @@ public class FireStationService {
         return new FireStationResponse(personsDTO, nbAdults, nbChildren);
     }
 
-    public Set<String> getPhoneNumbersByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
+    public Set<String> getPhoneNumbersByStation(int stationNumber){
         logger.debug("Getting list of phone numbers of people covered by station {}", stationNumber);
         
         Datas datas = dataRepository.readData();
@@ -156,7 +156,7 @@ public class FireStationService {
         return numbers;
     }
 
-    public Set<String> getAdressesByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
+    public Set<String> getAdressesByStation(int stationNumber){
         Datas datas = dataRepository.readData();
         List<FireStation> fireStations = datas.getFireStations();
 
@@ -166,7 +166,7 @@ public class FireStationService {
                 .collect(Collectors.toSet());
     }
 
-    public int getStationByAddress(String address) throws StreamReadException, DatabindException, IOException{
+    public int getStationByAddress(String address){
         Datas datas = dataRepository.readData();
 
         FireStation fireStation = datas.getFireStations().stream()
@@ -177,7 +177,7 @@ public class FireStationService {
         return fireStation.getStation();
     }
 
-    public ChildAlertResponse getChildrenByAdress(String address) throws StreamReadException, DatabindException, IOException{
+    public ChildAlertResponse getChildrenByAdress(String address){
         logger.debug("Getting children by address({})", address);
 
         Datas datas = dataRepository.readData();
@@ -197,15 +197,10 @@ public class FireStationService {
                 }
             })
             .map(person -> {
-                try {
                     return new ChildAlertChildDTO(
                             person.getFirstName(),
                             person.getLastName(),
                             personService.getAge(person));
-                } catch (IOException e) {
-                    logger.error("Error calculating age");
-                    return null;
-                }
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
@@ -225,7 +220,7 @@ public class FireStationService {
         return new ChildAlertResponse(children, otherPersons);
     }
 
-    public Set<PersonWithMedicalDTO> getPersonSetByAddress(String address) throws StreamReadException, DatabindException, IOException{
+    public Set<PersonWithMedicalDTO> getPersonSetByAddress(String address){
         logger.debug("Getting persons(set) by address({})", address);
 
         Datas datas = dataRepository.readData();
@@ -239,7 +234,6 @@ public class FireStationService {
 
         Set<PersonWithMedicalDTO> personsDTO = personsMap.entrySet().stream()
             .map(entry -> {
-                try {
                     return new PersonWithMedicalDTO(
                         entry.getKey().getFirstName(),
                         entry.getKey().getLastName(),
@@ -247,10 +241,6 @@ public class FireStationService {
                         personService.getAge(entry.getKey()),
                         entry.getValue().getMedications(),
                         entry.getValue().getAllergies());
-                } catch (IOException e) {
-                    logger.error("Error processing {} {}", entry.getKey().getFirstName(), entry.getKey().getLastName());
-                    return null;
-                }
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
@@ -258,38 +248,26 @@ public class FireStationService {
         return personsDTO;
     }
     
-    public FireResponse getPersonsByAddress(String address) throws StreamReadException, DatabindException, IOException{
+    public FireResponse getPersonsByAddress(String address){
         logger.debug("Getting persons by address({})", address);
 
         logger.info("List of people living at {}: ", address, getPersonSetByAddress(address));
         return new FireResponse(getPersonSetByAddress(address), getStationByAddress(address));
     }
 
-    public List<FloodDTO> getHomesByStations(List<Integer> stationNumbers) throws StreamReadException, DatabindException, IOException{
+    public List<FloodDTO> getHomesByStations(List<Integer> stationNumbers){
         logger.debug("Getting homes by stations({})", stationNumbers);
 
         List<FloodDTO> floods = stationNumbers.stream()
             .map(stationNumber -> {
                 Set<String> stationAddresses = new HashSet<String>();
-                try {
-                    stationAddresses = getAdressesByStation(stationNumber);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                stationAddresses = getAdressesByStation(stationNumber);
                
                 Map<String, Set<PersonWithMedicalDTO>> homes = stationAddresses.stream()
                     .collect(Collectors.toMap(
                         address -> address,
                         address -> {
-                            try {
-                                return getPersonSetByAddress(address);
-                            } catch (IOException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                                                        return null;
-                        }
+                            return getPersonSetByAddress(address);}
                     ));
             
                 return new FloodDTO(stationNumber, homes);
@@ -300,7 +278,7 @@ public class FireStationService {
             return floods;
     }
 
-    public boolean isMapped(String address) throws StreamReadException, DatabindException, IOException{
+    public boolean isMapped(String address){
         return dataRepository.readData().getFireStations()
                 .stream().map(FireStation::getAddress).toList()
                 .contains(address);

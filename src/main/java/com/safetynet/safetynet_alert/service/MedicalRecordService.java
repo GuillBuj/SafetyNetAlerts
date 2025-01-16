@@ -29,7 +29,7 @@ public class MedicalRecordService {
         this.dataRepository = dataRepository;
     }
 
-    public void createMedicalRecord(MedicalRecord medicalRecordToCreate) throws StreamReadException, DatabindException, IOException{
+    public void createMedicalRecord(MedicalRecord medicalRecordToCreate){
         logger.debug("Creating medical record ({})", medicalRecordToCreate);
 
         Datas datas = dataRepository.readData();
@@ -49,7 +49,7 @@ public class MedicalRecordService {
         }
     }
 
-    public void updateMedicalRecord(MedicalRecord updatedMedicalRecord) throws StreamReadException, DatabindException, IOException{
+    public void updateMedicalRecord(MedicalRecord updatedMedicalRecord){
         logger.debug("Updating medical record({})" , updatedMedicalRecord);
 
         Datas datas = dataRepository.readData();
@@ -65,13 +65,8 @@ public class MedicalRecordService {
                 medicalRecords.remove(medicalRecord);
                 medicalRecords.add(updatedMedicalRecord);
                 datas.setMedicalRecords(medicalRecords);
-                try {
-                    dataRepository.writeData(datas);
-                    logger.info("Medical record updated ({})", updatedMedicalRecord);
-                } catch (IOException e) {
-                    logger.error("Failed to save data after update", e);
-                }
-
+                dataRepository.writeData(datas);
+                logger.info("Medical record updated ({})", updatedMedicalRecord);
             },
             () -> {
                 logger.error("Medical record not found ({} {})", medicalRecordToUpdateDTO.firstName(), medicalRecordToUpdateDTO.lastName());
@@ -79,7 +74,7 @@ public class MedicalRecordService {
             );
     }
 
-    public void deleteMedicalRecord(PersonFullNameDTO medicalRecordDTO) throws StreamReadException, DatabindException, IOException{
+    public void deleteMedicalRecord(PersonFullNameDTO medicalRecordDTO){
         logger.debug("Deleting medical record ({})", medicalRecordDTO);
 
         Datas datas = dataRepository.readData();
@@ -92,12 +87,8 @@ public class MedicalRecordService {
             medicalRecord ->  {
                 medicalRecords.remove(medicalRecord);
                 datas.setMedicalRecords(medicalRecords);
-                try {
-                    dataRepository.writeData(datas);
-                    logger.info("Medical record deleted ({})", medicalRecordDTO);
-                } catch (IOException e) {
-                    logger.error("Failed to save data after deletion", e);
-                }
+                dataRepository.writeData(datas);
+                logger.info("Medical record deleted ({})", medicalRecordDTO);
             },
             () -> {
                 logger.error("Medical record not found ({} {})", medicalRecordDTO.firstName(), medicalRecordDTO.lastName());

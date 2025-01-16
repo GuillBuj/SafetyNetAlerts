@@ -33,15 +33,11 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 	public void run(String... args) {
 
 		Datas datas = new Datas();
-	
-		try {
-			datas = dataRepository.readData();
+
+		datas = dataRepository.readData();
 			
-			System.out.println(datas.getPersons());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(datas.getFireStations());
+		
 	}
 
 }

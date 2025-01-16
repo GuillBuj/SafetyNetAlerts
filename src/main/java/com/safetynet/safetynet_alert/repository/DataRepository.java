@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.safetynet_alert.exception.DataRepositoryException;
 import com.safetynet.safetynet_alert.model.Datas;
 
 @Repository
@@ -26,14 +27,24 @@ public class DataRepository {
         this.objectMapper = objectMapper;
     }
 
-    public Datas readData() throws StreamReadException, DatabindException, IOException{
-        logger.debug("Read objects from json file");
-        return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
+    public Datas readData() throws DataRepositoryException{
+        try{
+            logger.debug("Read objects from json file");
+            return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
+        } catch(IOException e){
+            logger.error("Error reading data from file");
+            throw new DataRepositoryException("Failed to read data from file");
+        }
     }
 
-    public void writeData(Datas datas) throws StreamWriteException, DatabindException, IOException{
-        logger.info("Write objects to json file");
-        objectMapper.writeValue(new File(DATA_FILE_PATH), datas);
+    public void writeData(Datas datas) throws DataRepositoryException{
+        try {
+            logger.debug("Write objects to json file");
+            objectMapper.writeValue(new File(DATA_FILE_PATH), datas);
+        } catch (IOException e) {
+            logger.error("Error writing data to file");
+            throw new DataRepositoryException("Failed to write data to file");
+        }
     }
 
 }
