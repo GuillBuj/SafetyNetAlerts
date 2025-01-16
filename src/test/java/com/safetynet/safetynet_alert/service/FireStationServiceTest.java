@@ -17,8 +17,11 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.data.DatasTest;
 import com.safetynet.safetynet_alert.model.Datas;
+import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
+import dto.ChildAlertChildDTO;
+import dto.ChildAlertResponse;
 import dto.FireStationPersonDTO;
 import dto.FireStationResponse;
 
@@ -62,6 +65,27 @@ public class FireStationServiceTest {
         assertEquals(expectedResponse, actualResponse);
     }
 
+    @Test
+    void getChildrenByAdressTest(){
+        
+        //--GIVEN
+        ChildAlertResponse expectedResponse
+            = new ChildAlertResponse(
+                Set.of(
+                    new ChildAlertChildDTO("Olivia", "Johnson", 7),
+                    new ChildAlertChildDTO("Ethan", "Johnson", 9)),
+                Set.of(
+                    new Person("Lucas", "Johnson", "101 Cherry St", "Culver", "97451", "123-456-7900", "lucas.johnson@example.com"),
+                    new Person("Sophia", "Johnson", "101 Cherry St", "Culver", "97451", "123-456-7901", "sophia.johnson@example.com")
+                    )
+                );
+
+        //--WHEN
+        ChildAlertResponse actualResponse = fireStationService.getChildrenByAdress("101 Cherry St");
+
+        //--THEN
+        assertEquals(expectedResponse, actualResponse);
+    }
 
     /* -----------------------------------TEMPLATE
     @Test
