@@ -1,7 +1,5 @@
 package com.safetynet.safetynet_alert;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,8 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-import com.safetynet.safetynet_alert.service.FireStationService;
-import com.safetynet.safetynet_alert.service.PersonService;
 
 
 @SpringBootApplication
@@ -32,11 +28,11 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		Datas datas = new Datas();
+		// Datas datas = new Datas();
 
-		datas = dataRepository.readData();
+		// datas = dataRepository.readData();
 			
-		System.out.println(datas.getFireStations());
+		// System.out.println(datas.getFireStations());
 		
 	}
 

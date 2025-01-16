@@ -1,6 +1,5 @@
 package com.safetynet.safetynet_alert.service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,8 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;

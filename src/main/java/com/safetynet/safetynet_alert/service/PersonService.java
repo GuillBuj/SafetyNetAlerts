@@ -165,8 +165,7 @@ public class PersonService {
         return age < 18 && age != -1;
     }
 
-    public List<PersonByLastNameDTO> getPersonsByLastName(String lastName)
-            throws StreamReadException, DatabindException, IOException {
+    public List<PersonByLastNameDTO> getPersonsByLastName(String lastName){
         logger.info("Filter persons by last name({})", lastName);
 
         Set<Person> persons = dataRepository.readData().getPersons().stream()
