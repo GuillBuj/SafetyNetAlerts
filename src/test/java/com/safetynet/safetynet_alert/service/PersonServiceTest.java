@@ -1,15 +1,12 @@
 package com.safetynet.safetynet_alert.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.safetynet_alert.data.DatasTest;
 import com.safetynet.safetynet_alert.model.Datas;
-import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
 import dto.PersonByLastNameDTO;
@@ -75,6 +71,19 @@ public class PersonServiceTest {
         assertEquals(expectedList, actualList); 
     }
 
+    @Test
+    void getEmailsByCityTest(){
+        //--GIVEN
+        String city ="Redmond";
+        Set<String> expectedSet = Set.of("amelia.scott@example.com", "evan.morris@example.com", "lily.green@example.com");
+
+        //--WHEN
+        Set<String> actualSet = personService.getEmailsByCity(city);
+
+        //--THEN
+        assertEquals(expectedSet, actualSet);
+    } 
+    
     /* -----------------------------------TEMPLATE
     @Test
     void Test(){

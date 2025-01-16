@@ -24,11 +24,11 @@ public class DatasTest {
                     new Person("Aiden", "Taylor", "202 Pine St", "Culver", "97451", "123-456-7904", "aiden.taylor@example.com"),
                     new Person("Mia", "White", "202 Pine St", "Culver", "97451", "123-456-7905", "mia.white@example.com"),
                     new Person("Isabella", "Lewis", "303 Cedar St", "Culver", "97451", "123-456-7907", "isabella.lewis@example.com"),
-                    new Person("Amelia", "Scott", "404 Birch St", "Culver", "97451", "123-456-7909", "amelia.scott@example.com"),
+                    new Person("Amelia", "Scott", "404 Birch St", "Redmond", "97756", "123-456-7909", "amelia.scott@example.com"),
                     new Person("Jackson", "Harris", "505 Oak St", "Culver", "97451", "123-456-7910", "jackson.harris@example.com"),
                     new Person("Harper", "Harris", "505 Oak St", "Culver", "97451", "123-456-7911", "harris.allen@example.com"),
-                    new Person("Evan", "Morris", "606 Elm St", "Culver", "97451", "123-456-7912", "evan.morris@example.com"),
-                    new Person("Lily", "Green", "707 Willow St", "Culver", "97451", "123-456-7913", "lily.green@example.com")
+                    new Person("Evan", "Morris", "606 Elm St", "Redmond", "97756", "123-456-7912", "evan.morris@example.com"),
+                    new Person("Lily", "Green", "707 Willow St", "Redmond", "97756", "123-456-7913", "lily.green@example.com")
             ));
         
             this.fireStations = new ArrayList<>(List.of(
