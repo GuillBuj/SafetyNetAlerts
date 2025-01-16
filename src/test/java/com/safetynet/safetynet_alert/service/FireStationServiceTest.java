@@ -87,6 +87,19 @@ public class FireStationServiceTest {
         assertEquals(expectedResponse, actualResponse);
     }
 
+    @Test
+    void getPhoneNumbersByStationTest(){
+        
+        //--GIVEN
+        Set<String> expectedSet = Set.of("123-456-7910", "123-456-7911","123-456-7913");
+
+        //--WHEN
+        Set<String> actualSet = fireStationService.getPhoneNumbersByStation(3);
+
+        //--THEN
+        assertEquals(expectedSet, actualSet);
+    }
+
     /* -----------------------------------TEMPLATE
     @Test
     void Test(){
