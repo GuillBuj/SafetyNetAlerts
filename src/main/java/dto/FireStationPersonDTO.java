@@ -6,4 +6,6 @@ public record FireStationPersonDTO(
     String address,
     String phone
     ) {
+        
 }
+

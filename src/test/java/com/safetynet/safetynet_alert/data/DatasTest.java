@@ -33,7 +33,7 @@ public class DatasTest {
         
             this.fireStations = new ArrayList<>(List.of(
                     new FireStation("101 Cherry St", 1),
-                    new FireStation("202 Pine St", 1),
+                    new FireStation("202 Pine St", 2),
                     new FireStation("303 Cedar St", 2),
                     new FireStation("404 Birch St", 2),
                     new FireStation("505 Oak St", 3),

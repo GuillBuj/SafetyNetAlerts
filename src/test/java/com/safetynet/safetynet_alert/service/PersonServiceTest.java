@@ -41,6 +41,7 @@ public class PersonServiceTest {
 
     @Test
     void getPersonsByLastNameTest(){
+        
         //--GIVEN
         String lastName = "Harris";
         //age has to be valid at all times
@@ -73,6 +74,7 @@ public class PersonServiceTest {
 
     @Test
     void getEmailsByCityTest(){
+        
         //--GIVEN
         String city ="Redmond";
         Set<String> expectedSet = Set.of("amelia.scott@example.com", "evan.morris@example.com", "lily.green@example.com");
@@ -84,18 +86,4 @@ public class PersonServiceTest {
         assertEquals(expectedSet, actualSet);
     } 
     
-    /* -----------------------------------TEMPLATE
-    @Test
-    void Test(){
-        //--GIVEN
-        
-
-        //--WHEN
-        
-
-        //--THEN
-         
-    } 
-     
-     */
 }
