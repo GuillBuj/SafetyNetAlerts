@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
-
 @SpringBootApplication
 public class SafetynetAlertApplication implements CommandLineRunner {
 
@@ -28,12 +27,14 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		// Datas datas = new Datas();
+		Datas datas = new Datas();
 
-		// datas = dataRepository.readData();
-			
+		datas = dataRepository.readData();
+
+		System.out.println(datas.getPersons());
 		// System.out.println(datas.getFireStations());
-		
+		// System.out.println(datas.getMedicalRecords());
+
 	}
 
 }

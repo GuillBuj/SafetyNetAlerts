@@ -45,7 +45,7 @@ public class PersonController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updatePerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException{
+    public void updatePerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException {
         personService.updatePerson(person);
     }
 
@@ -68,15 +68,4 @@ public class PersonController {
         return personService.getEmailsByCity(city);
     }
 
-    @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleAlreadyExistsException(AlreadyExistsException e){
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleNotFound(NotFoundException e){
-        return e.getMessage();
-    }
 }

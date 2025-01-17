@@ -28,37 +28,29 @@ public class MedicalRecordController {
     private final MedicalRecordService medicalRecordService;
 
     @Autowired
-    public MedicalRecordController(MedicalRecordService medicalRecordService){
+    public MedicalRecordController(MedicalRecordService medicalRecordService) {
         this.medicalRecordService = medicalRecordService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws StreamReadException, DatabindException, IOException{
+    public void createMedicalRecord(@RequestBody MedicalRecord medicalRecord)
+            throws StreamReadException, DatabindException, IOException {
         medicalRecordService.createMedicalRecord(medicalRecord);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws StreamReadException, DatabindException, IOException{
+    public void updateMedicalRecord(@RequestBody MedicalRecord medicalRecord)
+            throws StreamReadException, DatabindException, IOException {
         medicalRecordService.updateMedicalRecord(medicalRecord);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void deleteMedicalRecord(@RequestBody PersonFullNameDTO medicalRecord) throws StreamReadException, DatabindException, IOException{
+    public void deleteMedicalRecord(@RequestBody PersonFullNameDTO medicalRecord)
+            throws StreamReadException, DatabindException, IOException {
         medicalRecordService.deleteMedicalRecord(medicalRecord);
     }
 
-    @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handlePersonAlreadyExistsException(AlreadyExistsException e){
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handlePersonNotFound(NotFoundException e){
-        return e.getMessage();
-    }
 }
