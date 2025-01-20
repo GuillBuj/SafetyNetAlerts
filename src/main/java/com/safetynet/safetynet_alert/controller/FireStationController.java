@@ -33,72 +33,68 @@ public class FireStationController {
     private final FireStationService fireStationService;
 
     @Autowired
-    public FireStationController(FireStationService fireStationService){
+    public FireStationController(FireStationService fireStationService) {
         this.fireStationService = fireStationService;
     }
 
     @PostMapping("/firestation")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createFireStation(@RequestBody FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+    public void createFireStation(@RequestBody FireStation fireStation)
+            throws StreamReadException, DatabindException, IOException {
         fireStationService.createFireStation(fireStation);
     }
 
     @PutMapping("/firestation")
     @ResponseStatus(HttpStatus.OK)
-    public void updateFireStation(@RequestBody FireStation fireStation) throws StreamReadException, DatabindException, IOException{
+    public void updateFireStation(@RequestBody FireStation fireStation)
+            throws StreamReadException, DatabindException, IOException {
         fireStationService.updateFireStation(fireStation);
     }
-    
+
     @DeleteMapping("/firestation")
     @ResponseStatus(HttpStatus.OK)
     public void deleteFireStation(@RequestParam(required = false) Integer stationNumber,
-                                    @RequestParam(required = false) String address) throws StreamReadException, DatabindException, IOException{
-        if(stationNumber != null){
+            @RequestParam(required = false) String address) throws StreamReadException, DatabindException, IOException {
+        if (stationNumber != null) {
             fireStationService.deleteFireStation(stationNumber);
         } else if (address != null) {
             fireStationService.deleteFireStation(address);
-        }                                  
+        }
     }
-    
+
     @GetMapping("/firestation")
-    public FireStationResponse getPersonsByStation(@RequestParam int stationNumber) throws StreamReadException, DatabindException, IOException{
+    public FireStationResponse getPersonsByStation(@RequestParam int stationNumber)
+            throws StreamReadException, DatabindException, IOException {
 
         return fireStationService.getPersonsByStation(stationNumber);
     }
 
     @GetMapping("/phoneAlert")
-    public Set<String> getPhoneNumbersByStation(@RequestParam int stationNumber) throws StreamReadException, DatabindException, IOException{
-        
+    public Set<String> getPhoneNumbersByStation(@RequestParam int stationNumber)
+            throws StreamReadException, DatabindException, IOException {
+
         return fireStationService.getPhoneNumbersByStation(stationNumber);
     }
 
     @GetMapping("/childAlert")
-    public ChildAlertResponse getChildrenByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
+    public ChildAlertResponse getChildrenByAddress(@RequestParam String address)
+            throws StreamReadException, DatabindException, IOException {
 
         return fireStationService.getChildrenByAdress(address);
     }
 
     @GetMapping("/fire")
-    public FireResponse getPersonsByAddress(@RequestParam String address) throws StreamReadException, DatabindException, IOException{
+    public FireResponse getPersonsByAddress(@RequestParam String address)
+            throws StreamReadException, DatabindException, IOException {
 
         return fireStationService.getPersonsByAddress(address);
     }
 
     @GetMapping("/flood")
-    public List<FloodDTO> getHomesByStation(@RequestParam List<Integer> stationNumbers) throws StreamReadException, DatabindException, IOException{
+    public List<FloodDTO> getHomesByStation(@RequestParam List<Integer> stationNumbers)
+            throws StreamReadException, DatabindException, IOException {
 
         return fireStationService.getHomesByStations(stationNumbers);
     }
 
-    @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleAlreadyExistsException(AlreadyExistsException e){
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleNotFound(NotFoundException e){
-        return e.getMessage();
-    }
 }
