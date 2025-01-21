@@ -28,7 +28,8 @@ public class DatasTest {
                     new Person("Jackson", "Harris", "505 Oak St", "Culver", "97451", "123-456-7910", "jackson.harris@example.com"),
                     new Person("Harper", "Harris", "505 Oak St", "Culver", "97451", "123-456-7911", "harris.allen@example.com"),
                     new Person("Evan", "Morris", "606 Elm St", "Redmond", "97756", "123-456-7912", "evan.morris@example.com"),
-                    new Person("Lily", "Green", "707 Willow St", "Redmond", "97756", "123-456-7913", "lily.green@example.com")
+                    new Person("Lily", "Green", "707 Willow St", "Redmond", "97756", "123-456-7913", "lily.green@example.com"),
+                    new Person("James", "Marshall", "808 Will St", "Red", "97757", "123-456-7914", "lily.green@example.com")
             ));
         
             this.fireStations = new ArrayList<>(List.of(
@@ -38,7 +39,8 @@ public class DatasTest {
                     new FireStation("404 Birch St", 2),
                     new FireStation("505 Oak St", 3),
                     new FireStation("606 Elm St", 1),
-                    new FireStation("707 Willow St", 3)
+                    new FireStation("707 Willow St", 3),
+                    new FireStation("808 Will St", 4)
             ));
         
             this.medicalRecords = new ArrayList<>(List.of(
@@ -53,7 +55,8 @@ public class DatasTest {
                 new MedicalRecord("Jackson", "Harris", LocalDate.of(1994, 10, 30), List.of("Aspirin"), List.of("Dust", "Milk")),
                 new MedicalRecord("Harper", "Harris", LocalDate.of(1994, 10, 30), List.of("Metformin", "Lisinopril"), List.of("Eggs", "Wheat")),
                 new MedicalRecord("Evan", "Morris", LocalDate.of(1980, 4, 20), List.of("Tylenol"), List.of("Penicillin")),
-                new MedicalRecord("Lily", "Green", LocalDate.of(1992, 2, 14), List.of("Insulin", "Aspirin"), List.of("Peanuts", "Soy"))
+                new MedicalRecord("Lily", "Green", LocalDate.of(1992, 2, 14), List.of("Insulin", "Aspirin"), List.of("Peanuts", "Soy")),
+                new MedicalRecord("James", "Marshall", LocalDate.of(1992, 2, 14), List.of(), List.of())
         ));  
     }
 

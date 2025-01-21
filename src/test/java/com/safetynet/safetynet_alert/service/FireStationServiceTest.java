@@ -30,6 +30,7 @@ import dto.ChildAlertResponse;
 import dto.FireResponse;
 import dto.FireStationPersonDTO;
 import dto.FireStationResponse;
+import dto.FloodDTO;
 import dto.PersonWithMedicalDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -125,40 +126,37 @@ public class FireStationServiceTest {
         assertEquals(expectedResponse, actualResponse);
     } 
 
-/*public Set<PersonWithMedicalDTO> getPersonSetByAddress(String address){
-        logger.debug("Getting persons(set) by address({})", address);
+    @Test
+    void getHomesByStationsTest(){
+        
+        //--GIVEN
+        List<FloodDTO> expectedResponse = List.of(
+            new FloodDTO(3, 
+                Map.of(
+                    "505 Oak St",
+                    Set.of(
+                        new PersonWithMedicalDTO("Jackson", "Harris", "123-456-7910", 30, List.of("Aspirin"), List.of("Dust", "Milk")),
+                        new PersonWithMedicalDTO("Harper", "Harris", "123-456-7911", 30, List.of("Metformin", "Lisinopril"), List.of("Eggs", "Wheat"))
+                    ),
+                    "707 Willow St",
+                    Set.of(
+                        new PersonWithMedicalDTO("Lily", "Green", "123-456-7913", 32, List.of("Insulin", "Aspirin"), List.of("Peanuts", "Soy"))
+                    )
+                )
+            ),
+            new FloodDTO(4, 
+                Map.of("808 Will St",
+                        Set.of(
+                            new PersonWithMedicalDTO("James", "Marshall", "123-456-7914", 32, List.of(), List.of())
+                            ))))
+            ;            
+        
+        //--WHEN
+        List<FloodDTO> actualResponse = fireStationService.getHomesByStations(List.of(3,4));
 
-        Datas datas = dataRepository.readData();
-        PersonService personService = new PersonService(dataRepository);
-
-        Set<Person> persons = datas.getPersons().stream()
-            .filter(person -> person.getAddress().equals(address))
-            .collect(Collectors.toSet());
-
-        Map<Person, MedicalRecord> personsMap = personService.mapPersonToMedicalRecord(persons);
-
-        Set<PersonWithMedicalDTO> personsDTO = personsMap.entrySet().stream()
-            .map(entry -> {
-                    return new PersonWithMedicalDTO(
-                        entry.getKey().getFirstName(),
-                        entry.getKey().getLastName(),
-                        entry.getKey().getPhone(),
-                        personService.getAge(entry.getKey()),
-                        entry.getValue().getMedications(),
-                        entry.getValue().getAllergies());
-            })
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-
-        return personsDTO;
-    }
-    
-    public FireResponse getPersonsByAddress(String address){
-        logger.debug("Getting persons by address({})", address);
-
-        logger.info("List of people living at {}: ", address, getPersonSetByAddress(address));
-        return new FireResponse(getPersonSetByAddress(address), getStationByAddress(address));
-    }*/
+        //--THEN
+        assertEquals(expectedResponse, actualResponse); 
+    } 
 
     /* -----------------------------------TEMPLATE
     @Test
