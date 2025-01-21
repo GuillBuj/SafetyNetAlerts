@@ -1,6 +1,7 @@
 package com.safetynet.safetynet_alert.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
@@ -11,12 +12,9 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +25,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.data.DatasTest;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
@@ -72,12 +71,32 @@ public class FireStationServiceTest {
     void createFireStationAlreadyExistsTest(){
         FireStation fireStation = datas.getFireStations().get(0);
 
-        AlreadyExistsException exception 
-            = assertThrows(AlreadyExistsException.class, () -> fireStationService.createFireStation(fireStation));
+        assertThrows(AlreadyExistsException.class, () -> fireStationService.createFireStation(fireStation));
 
         verify(dataRepository, never()).writeData(datas);  
     }
     
+    @Test
+    void updateFireStationTest(){
+        FireStation fireStation = datas.getFireStations().get(0);
+        FireStation updatedFireStation = new FireStation(fireStation.getAddress(), 999);
+        
+        fireStationService.updateFireStation(updatedFireStation);
+
+        verify(dataRepository, times(1)).writeData(datas);
+        assertTrue(datas.getFireStations().contains(updatedFireStation));
+        assertFalse(datas.getFireStations().contains(fireStation));
+    }
+
+    @Test
+    void updateFireStationNotFoundTest(){
+        FireStation fireStation = new FireStation("Not found address", 8);
+        
+        assertThrows(NotFoundException.class,
+                    () -> fireStationService.updateFireStation(fireStation));
+        
+        verify(dataRepository, never()).writeData(datas);  
+    }
     
     @Test
     void getPersonsByStationTest() throws StreamReadException, DatabindException, IOException{
