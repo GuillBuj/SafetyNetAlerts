@@ -94,7 +94,7 @@ public class FireStationService {
     public void deleteFireStation(int stationNumber){
         logger.debug("Deleting mapping for firestation number {}", stationNumber);
         
-        if(getAdressesByStation(stationNumber)!=null){
+        if(!getAdressesByStation(stationNumber).isEmpty()){
             Datas datas = dataRepository.readData();
             List<FireStation> fireStations = datas.getFireStations();
             fireStations.removeIf(fireStation -> fireStation.getStation() == stationNumber);

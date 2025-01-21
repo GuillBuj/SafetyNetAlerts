@@ -97,7 +97,48 @@ public class FireStationServiceTest {
         
         verify(dataRepository, never()).writeData(datas);  
     }
+
+    @Test
+    void deleteFireStationByAddressTest(){
+        FireStation fireStation = datas.getFireStations().get(0);
+        
+        fireStationService.deleteFireStation(fireStation.getAddress());
+
+        verify(dataRepository, times(1)).writeData(datas);
+        assertFalse(datas.getFireStations().contains(fireStation));
+    }
     
+    @Test
+    void deleteFireStationByAddressNotFoundTest(){
+        
+        assertThrows(NotFoundException.class,
+                    () -> fireStationService.deleteFireStation("Not found address"));
+        
+        verify(dataRepository, never()).writeData(datas);  
+    }
+    
+    @Test
+    void deleteFireStationByNumberTest(){
+        FireStation fireStation = datas.getFireStations().get(0);
+        int stationNumber = fireStation.getStation();
+        
+        fireStationService.deleteFireStation(stationNumber);
+
+        verify(dataRepository, times(1)).writeData(datas);
+        assertFalse(datas.getFireStations().stream()
+                    .anyMatch(fStation -> fStation.getStation() == stationNumber)
+        );
+    }
+
+    @Test
+    void deleteFireStationByNumberNotFoundTest(){
+        
+        assertThrows(NotFoundException.class,
+                    () -> fireStationService.deleteFireStation(999));
+        
+        verify(dataRepository, never()).writeData(datas);  
+    }
+        
     @Test
     void getPersonsByStationTest() throws StreamReadException, DatabindException, IOException{
         
