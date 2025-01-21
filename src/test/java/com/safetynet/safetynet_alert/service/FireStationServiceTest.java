@@ -1,6 +1,11 @@
 package com.safetynet.safetynet_alert.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -11,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +26,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.data.DatasTest;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.model.Datas;
+import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
@@ -50,6 +58,27 @@ public class FireStationServiceTest {
         when(dataRepository.readData()).thenReturn(datas);
     }
 
+    @Test
+    void createFireStationTest(){
+        FireStation fireStation = new FireStation("3 Rory Rd", 8);
+
+        fireStationService.createFireStation(fireStation);
+
+        verify(dataRepository, times(1)).writeData(datas);
+        assertTrue(datas.getFireStations().contains(fireStation));
+    }
+
+    @Test
+    void createFireStationAlreadyExistsTest(){
+        FireStation fireStation = datas.getFireStations().get(0);
+
+        AlreadyExistsException exception 
+            = assertThrows(AlreadyExistsException.class, () -> fireStationService.createFireStation(fireStation));
+
+        verify(dataRepository, never()).writeData(datas);  
+    }
+    
+    
     @Test
     void getPersonsByStationTest() throws StreamReadException, DatabindException, IOException{
         
