@@ -1,6 +1,5 @@
 package com.safetynet.safetynet_alert.exception;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;

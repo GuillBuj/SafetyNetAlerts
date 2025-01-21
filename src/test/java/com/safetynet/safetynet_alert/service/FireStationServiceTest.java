@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.data.DatasTest;
 import com.safetynet.safetynet_alert.model.Datas;
-import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 

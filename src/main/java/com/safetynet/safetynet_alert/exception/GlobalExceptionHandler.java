@@ -1,6 +1,5 @@
 package com.safetynet.safetynet_alert.exception;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
@@ -16,31 +15,38 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(AlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleAlreadyExistsException(AlreadyExistsException e) {
-        return e.getMessage();
-    }
 
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorMessage> resourceAlreadyExistsException(AlreadyExistsException e, WebRequest request) {
+        ErrorMessage message = new ErrorMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getMessage(),
+                request.getDescription(false));
+        log.error(message.toString(), e);
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorMessage> resourceNotFoundException(NotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorMessage> resourceNotFoundException(NotFoundException e, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
                 LocalDateTime.now(),
-                ex.getMessage(),
+                e.getMessage(),
                 request.getDescription(false));
-        log.error(message.toString(), ex);
+        log.error(message.toString(), e);
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException ex,
+    public ResponseEntity<ErrorMessage> methodArgumentNotValidException(MethodArgumentNotValidException e,
             WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 LocalDateTime.now(),
-                ex.getMessage(),
+                e.getMessage(),
                 request.getDescription(false));
+        log.error(message.toString(), e);
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
     }
 }
