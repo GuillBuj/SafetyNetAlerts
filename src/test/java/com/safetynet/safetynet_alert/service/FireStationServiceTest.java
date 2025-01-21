@@ -52,6 +52,7 @@ public class FireStationServiceTest {
 
     @BeforeEach
     void setUp(){
+        //TODO : voir si conditionnel
         DatasTest datasTest = new DatasTest();
         datas = datasTest.getDatas();
         when(dataRepository.readData()).thenReturn(datas);
@@ -95,7 +96,8 @@ public class FireStationServiceTest {
         assertThrows(NotFoundException.class,
                     () -> fireStationService.updateFireStation(fireStation));
         
-        verify(dataRepository, never()).writeData(datas);  
+        verify(dataRepository, never()).writeData(datas);
+        assertFalse(datas.getFireStations().contains(fireStation));  
     }
 
     @Test

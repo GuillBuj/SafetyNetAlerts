@@ -1,6 +1,12 @@
 package com.safetynet.safetynet_alert.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -16,10 +22,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.safetynet_alert.data.DatasTest;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
+import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
 import dto.PersonByLastNameDTO;
+import dto.PersonFullNameDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class PersonServiceTest {
@@ -39,6 +49,79 @@ public class PersonServiceTest {
         when(dataRepository.readData()).thenReturn(datas);
     }
 
+    @Test
+    void createPersonTest(){
+        Person person = new Person("John", "Doe", "123 Main St", "Springfield", "99999", "555-555-5555", "john.doe@example.com");
+
+
+        personService.createPerson(person);
+
+        verify(dataRepository, times(1)).writeData(datas);
+        assertTrue(datas.getPersons().contains(person));
+    }
+    
+    @Test
+    void createPersonAlreadyExistsTest(){
+        Person person = datas.getPersons().get(0);
+
+        assertThrows(AlreadyExistsException.class, () -> personService.createPerson(person));
+
+        verify(dataRepository, never()).writeData(datas);  
+    }
+
+    @Test
+    void updatePersonTest(){
+        Person person = datas.getPersons().get(0);
+
+        Person updatedPerson = new Person(
+            person.getFirstName(),
+            person.getLastName(),
+            person.getAddress(),
+            person.getCity(),
+            person.getZip(),
+            person.getPhone(),
+            "newemail@ex.com"
+        );
+
+        personService.updatePerson(updatedPerson);
+
+        verify(dataRepository, times(1)).writeData(datas);
+        assert(datas.getPersons().contains(updatedPerson));
+        assertFalse(datas.getPersons().contains(person));  
+    }
+
+    @Test
+    void updatePersonNotFoundTest(){
+        Person person = new Person("Not","Existing",  null, null, null, null, null);
+
+         assertThrows(NotFoundException.class,
+                    () -> personService.updatePerson(person));
+
+        verify(dataRepository, never()).writeData(datas);
+        assertFalse(datas.getPersons().contains(person));  
+    }
+
+    @Test
+    void deletePersonTest(){
+        Person person = datas.getPersons().get(0);
+
+        personService.deletePerson(new PersonFullNameDTO(person.getFirstName(), person.getLastName()));
+
+        verify(dataRepository, times(2)).writeData(datas);//person+medicalRecord
+        assertFalse(datas.getPersons().contains(person));
+        assertFalse(datas.getMedicalRecords().stream()
+                    .anyMatch(medicalRecord -> medicalRecord.getFirstName() == person.getFirstName()
+                                        && medicalRecord.getLastName() == person.getLastName()));
+    }
+
+    @Test
+    void deletePersonNotFoundTest(){
+        assertThrows(NotFoundException.class,
+                    () -> personService.deletePerson(new PersonFullNameDTO("Not", "Existing")));
+        
+        verify(dataRepository, never()).writeData(datas);
+    }
+    
     @Test
     void getPersonsByLastNameTest(){
         
