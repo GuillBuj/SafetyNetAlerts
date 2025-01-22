@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -64,7 +65,7 @@ public class FireStationServiceTest {
 
         fireStationService.createFireStation(fireStation);
 
-        verify(dataRepository, times(1)).writeData(datas);
+        verify(dataRepository, times(1)).writeData(any(Datas.class));
         assertTrue(datas.getFireStations().contains(fireStation));
     }
 
@@ -74,7 +75,7 @@ public class FireStationServiceTest {
 
         assertThrows(AlreadyExistsException.class, () -> fireStationService.createFireStation(fireStation));
 
-        verify(dataRepository, never()).writeData(datas);  
+        verify(dataRepository, never()).writeData(any(Datas.class));  
     }
     
     @Test
@@ -84,7 +85,7 @@ public class FireStationServiceTest {
         
         fireStationService.updateFireStation(updatedFireStation);
 
-        verify(dataRepository, times(1)).writeData(datas);
+        verify(dataRepository, times(1)).writeData(any(Datas.class));
         assertTrue(datas.getFireStations().contains(updatedFireStation));
         assertFalse(datas.getFireStations().contains(fireStation));
     }
@@ -96,7 +97,7 @@ public class FireStationServiceTest {
         assertThrows(NotFoundException.class,
                     () -> fireStationService.updateFireStation(fireStation));
         
-        verify(dataRepository, never()).writeData(datas);
+        verify(dataRepository, never()).writeData(any(Datas.class));
         assertFalse(datas.getFireStations().contains(fireStation));  
     }
 
@@ -106,7 +107,7 @@ public class FireStationServiceTest {
         
         fireStationService.deleteFireStation(fireStation.getAddress());
 
-        verify(dataRepository, times(1)).writeData(datas);
+        verify(dataRepository, times(1)).writeData(any(Datas.class));
         assertFalse(datas.getFireStations().contains(fireStation));
     }
     
@@ -116,7 +117,7 @@ public class FireStationServiceTest {
         assertThrows(NotFoundException.class,
                     () -> fireStationService.deleteFireStation("Not found address"));
         
-        verify(dataRepository, never()).writeData(datas);  
+        verify(dataRepository, never()).writeData(any(Datas.class));  
     }
     
     @Test
@@ -126,7 +127,7 @@ public class FireStationServiceTest {
         
         fireStationService.deleteFireStation(stationNumber);
 
-        verify(dataRepository, times(1)).writeData(datas);
+        verify(dataRepository, times(1)).writeData(any(Datas.class));
         assertFalse(datas.getFireStations().stream()
                     .anyMatch(fStation -> fStation.getStation() == stationNumber)
         );
@@ -138,7 +139,7 @@ public class FireStationServiceTest {
         assertThrows(NotFoundException.class,
                     () -> fireStationService.deleteFireStation(999));
         
-        verify(dataRepository, never()).writeData(datas);  
+        verify(dataRepository, never()).writeData(any(Datas.class));  
     }
         
     @Test

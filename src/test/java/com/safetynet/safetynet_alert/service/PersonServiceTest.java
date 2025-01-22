@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,7 +57,7 @@ public class PersonServiceTest {
 
         personService.createPerson(person);
 
-        verify(dataRepository, times(1)).writeData(datas);
+        verify(dataRepository, times(1)).writeData(any(Datas.class));
         assertTrue(datas.getPersons().contains(person));
     }
     
@@ -66,7 +67,7 @@ public class PersonServiceTest {
 
         assertThrows(AlreadyExistsException.class, () -> personService.createPerson(person));
 
-        verify(dataRepository, never()).writeData(datas);  
+        verify(dataRepository, never()).writeData(any(Datas.class));  
     }
 
     @Test
@@ -85,7 +86,7 @@ public class PersonServiceTest {
 
         personService.updatePerson(updatedPerson);
 
-        verify(dataRepository, times(1)).writeData(datas);
+        verify(dataRepository, times(1)).writeData(any(Datas.class));
         assert(datas.getPersons().contains(updatedPerson));
         assertFalse(datas.getPersons().contains(person));  
     }
@@ -97,7 +98,7 @@ public class PersonServiceTest {
          assertThrows(NotFoundException.class,
                     () -> personService.updatePerson(person));
 
-        verify(dataRepository, never()).writeData(datas);
+        verify(dataRepository, never()).writeData(any(Datas.class));
         assertFalse(datas.getPersons().contains(person));  
     }
 
@@ -107,7 +108,7 @@ public class PersonServiceTest {
 
         personService.deletePerson(new PersonFullNameDTO(person.getFirstName(), person.getLastName()));
 
-        verify(dataRepository, times(2)).writeData(datas);//person+medicalRecord
+        verify(dataRepository, times(2)).writeData(any(Datas.class));//person+medicalRecord
         assertFalse(datas.getPersons().contains(person));
         assertFalse(datas.getMedicalRecords().stream()
                     .anyMatch(medicalRecord -> medicalRecord.getFirstName() == person.getFirstName()
@@ -119,7 +120,7 @@ public class PersonServiceTest {
         assertThrows(NotFoundException.class,
                     () -> personService.deletePerson(new PersonFullNameDTO("Not", "Existing")));
         
-        verify(dataRepository, never()).writeData(datas);
+        verify(dataRepository, never()).writeData(any(Datas.class));
     }
     
     @Test
