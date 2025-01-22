@@ -121,8 +121,55 @@
 						</goals>
 						<phase>verify</phase>
 					</execution>
+					<execution>
+            <id>prepare-agent-integration</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>prepare-agent-integration</goal>
+            </goals>
+        </execution>
+        <!-- Rapport pour les tests d'intégration -->
+        <execution>
+            <id>report-integration</id>
+            <phase>post-integration-test</phase>
+            <goals>
+                <goal>report-integration</goal>
+            </goals>
+        </execution>
 				</executions>
 			</plugin>
+			<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <version>3.0.0-M7</version> <!-- Version la plus récente -->
+    <executions>
+        <execution>
+            <goals>
+                <goal>integration-test</goal> <!-- Exécuter les tests d'intégration -->
+                <goal>verify</goal> <!-- Vérifier les résultats des tests -->
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version> <!-- Version la plus récente -->
+                <configuration>
+                    <!-- Configuration supplémentaire si nécessaire -->
+                </configuration>
+            </plugin>
+
+            <!-- Plugin Surefire Report pour générer des rapports HTML -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M7</version> <!-- Version la plus récente -->
+                <configuration>
+                    <!-- Dossier de sortie pour les rapports HTML -->
+                    <outputDirectory>${project.build.directory}/surefire-reports</outputDirectory>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 

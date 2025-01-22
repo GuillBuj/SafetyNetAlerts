@@ -27,11 +27,11 @@ public class SafetynetAlertApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		Datas datas = new Datas();
+		// Datas datas = new Datas();
 
-		datas = dataRepository.readData();
+		// datas = dataRepository.readData();
 
-		System.out.println(datas.getPersons());
+		// System.out.println(datas.getPersons());
 		// System.out.println(datas.getFireStations());
 		// System.out.println(datas.getMedicalRecords());
 
