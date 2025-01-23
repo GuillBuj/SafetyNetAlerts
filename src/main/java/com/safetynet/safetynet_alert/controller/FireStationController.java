@@ -17,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.dto.ChildAlertResponse;
+import com.safetynet.safetynet_alert.dto.FireResponse;
+import com.safetynet.safetynet_alert.dto.FireStationResponse;
+import com.safetynet.safetynet_alert.dto.FloodDTO;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.service.FireStationService;
-
-import dto.ChildAlertResponse;
-import dto.FireResponse;
-import dto.FireStationResponse;
-import dto.FloodDTO;
 
 @RestController
 public class FireStationController {

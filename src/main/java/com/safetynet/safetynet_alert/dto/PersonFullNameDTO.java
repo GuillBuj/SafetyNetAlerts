@@ -1,4 +1,4 @@
-package dto;
+package com.safetynet.safetynet_alert.dto;
 
 import java.util.List;
 import java.util.Optional;

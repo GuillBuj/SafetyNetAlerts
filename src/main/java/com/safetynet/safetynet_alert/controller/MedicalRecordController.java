@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.service.MedicalRecordService;
-
-import dto.PersonFullNameDTO;
 
 @RestController
 @RequestMapping("/medicalRecord")

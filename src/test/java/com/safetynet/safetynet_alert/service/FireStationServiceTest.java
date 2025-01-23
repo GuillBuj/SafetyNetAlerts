@@ -25,20 +25,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.safetynet.safetynet_alert.data.DatasTest;
+import com.safetynet.safetynet_alert.dto.ChildAlertChildDTO;
+import com.safetynet.safetynet_alert.dto.ChildAlertResponse;
+import com.safetynet.safetynet_alert.dto.FireResponse;
+import com.safetynet.safetynet_alert.dto.FireStationPersonDTO;
+import com.safetynet.safetynet_alert.dto.FireStationResponse;
+import com.safetynet.safetynet_alert.dto.FloodDTO;
+import com.safetynet.safetynet_alert.dto.PersonWithMedicalDTO;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-
-import dto.ChildAlertChildDTO;
-import dto.ChildAlertResponse;
-import dto.FireResponse;
-import dto.FireStationPersonDTO;
-import dto.FireStationResponse;
-import dto.FloodDTO;
-import dto.PersonWithMedicalDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class FireStationServiceTest {

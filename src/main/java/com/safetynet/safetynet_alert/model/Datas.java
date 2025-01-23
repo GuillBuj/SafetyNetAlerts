@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
@@ -25,6 +26,8 @@ public class Datas {
         this.medicalRecords = new ArrayList<>();
     }
 
+
+    
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

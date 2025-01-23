@@ -18,15 +18,14 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.dto.PersonByLastNameDTO;
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-
-import dto.PersonByLastNameDTO;
-import dto.PersonFullNameDTO;
 
 @Service
 public class PersonService {

@@ -1,15 +1,14 @@
-package dto;
+package com.safetynet.safetynet_alert.dto;
 
 import java.util.List;
 
-public record PersonByLastNameDTO(
+public record PersonWithMedicalDTO(
     String firstName,
     String lastName,
     String phone,
     int age,
-    String email,
     List<String> medications,
     List<String> allergies
 ) {
-    
+
 }

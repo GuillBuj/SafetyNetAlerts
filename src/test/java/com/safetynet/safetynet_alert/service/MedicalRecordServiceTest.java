@@ -20,13 +20,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-
-import dto.PersonFullNameDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class MedicalRecordServiceTest {

@@ -23,14 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.safetynet.safetynet_alert.data.DatasTest;
+import com.safetynet.safetynet_alert.dto.PersonByLastNameDTO;
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.Datas;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-
-import dto.PersonByLastNameDTO;
-import dto.PersonFullNameDTO;
 
 @ExtendWith(MockitoExtension.class)
 public class PersonServiceTest {
@@ -53,7 +52,6 @@ public class PersonServiceTest {
     @Test
     void createPersonTest(){
         Person person = new Person("John", "Doe", "123 Main St", "Springfield", "99999", "555-555-5555", "john.doe@example.com");
-
 
         personService.createPerson(person);
 

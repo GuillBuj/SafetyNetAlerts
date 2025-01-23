@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.dto.PersonByLastNameDTO;
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.service.PersonService;
-
-import dto.PersonByLastNameDTO;
-import dto.PersonFullNameDTO;
 
 @RestController
 @RequestMapping("/person")

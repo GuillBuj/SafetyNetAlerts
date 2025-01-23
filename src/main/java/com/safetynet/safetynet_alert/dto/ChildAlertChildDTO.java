@@ -1,4 +1,4 @@
-package dto;
+package com.safetynet.safetynet_alert.dto;
 
 public record ChildAlertChildDTO(
     String firstName,
