@@ -5,22 +5,36 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.safetynet.safetynet_alert.dto.PersonByLastNameDTO;
 import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
 import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
 import com.safetynet.safetynet_alert.exception.NotFoundException;
@@ -134,4 +148,43 @@ public class PersonControllerIT {
         verify(personService, times(1)).deletePerson(person);    
     }
 
+    @Test
+    void personInfoLastNameTest() throws Exception{
+        String lastName = "Doe";
+
+        List<PersonByLastNameDTO> persons = List.of(
+        new PersonByLastNameDTO(
+            "John", "Doe", "123-456-7890", 25, "johndoe@example.com",
+            List.of("Medication1", "Medication2"), List.of("Allergy1")),
+        new PersonByLastNameDTO(
+            "Jane", "Doe", "987-654-3210", 30, "janedoe@example.com",
+            List.of("Medication3"), List.of("Allergy2", "Allergy3"))
+        );
+
+        when(personService.getPersonsByLastName(lastName)).thenReturn(persons);
+
+        mockMvc.perform(get("/personInfoLastName")
+                        .param("lastName",lastName))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(persons)));
+
+        verify(personService, times(1)).getPersonsByLastName(lastName);
+    }
+
+    @Test
+    void communityEmailTest() throws JsonProcessingException, Exception{
+        String city = "Green Bay";
+
+        Set<String> emails = Set.of("johndoe@example.com", "janedoe@example.com");
+
+        when(personService.getEmailsByCity(city)).thenReturn(emails);
+
+        mockMvc.perform(get("/communityEmail")
+                        .param("city",city))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(emails)));
+        
+        verify(personService, times(1)).getEmailsByCity(city);            
+    }
+   
 }

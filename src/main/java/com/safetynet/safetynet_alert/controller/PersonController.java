@@ -24,7 +24,7 @@ import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.service.PersonService;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping
 public class PersonController {
     private final PersonService personService;
 
@@ -33,19 +33,19 @@ public class PersonController {
         this.personService = personService;
     }
 
-    @PostMapping
+    @PostMapping("/person")
     @ResponseStatus(HttpStatus.CREATED)
     public void createPerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException {
         personService.createPerson(person);
     }
 
-    @PutMapping
+    @PutMapping("/person")
     @ResponseStatus(HttpStatus.OK)
     public void updatePerson(@RequestBody Person person) throws StreamReadException, DatabindException, IOException {
         personService.updatePerson(person);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/person")
     @ResponseStatus(HttpStatus.OK)
     public void deletePerson(@RequestBody PersonFullNameDTO person)
             throws StreamReadException, DatabindException, IOException {
