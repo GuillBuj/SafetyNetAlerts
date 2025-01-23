@@ -61,6 +61,8 @@ public class FireStationControllerIT {
         objectMapper = new ObjectMapper();
     }
 
+    //TODO voir si il faut faire les tests avec MethodArgumentNotValidException pour tout
+
     @Test
     public void createFireStationTestCreated() throws JsonProcessingException, Exception{
         FireStation fireStation = new FireStation("3 Rory Rd", 8);

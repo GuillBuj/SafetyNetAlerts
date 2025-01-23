@@ -491,6 +491,19 @@
                 "tradoxidine:400mg"
             ],
             "allergies": []
+        },
+        {
+            "firstName": "John",
+            "lastName": "Doe",
+            "birthdate": "01/15/1990",
+            "medications": [
+                "Aspirin",
+                "Ibuprofen"
+            ],
+            "allergies": [
+                "Peanuts",
+                "Shellfish"
+            ]
         }
     ]
 }
