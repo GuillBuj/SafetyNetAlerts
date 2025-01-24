@@ -206,33 +206,6 @@
             "zip": "97451",
             "phone": "841-874-7458",
             "email": "gramps@email.com"
-        },
-        {
-            "firstName": "zz",
-            "lastName": "zz",
-            "address": "zz",
-            "city": "zz",
-            "zip": "zz",
-            "phone": "zz",
-            "email": "zz"
-        },
-        {
-            "firstName": "zzzz",
-            "lastName": "zz",
-            "address": "boo",
-            "city": "zz",
-            "zip": "zz",
-            "phone": "zz",
-            "email": "boo"
-        },
-        {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "123 Main St",
-            "city": "Anytown",
-            "zip": "12345",
-            "phone": "123-456-7890",
-            "email": "john.doe@example.com"
         }
     ],
     "firestations": [
@@ -491,19 +464,6 @@
                 "tradoxidine:400mg"
             ],
             "allergies": []
-        },
-        {
-            "firstName": "John",
-            "lastName": "Doe",
-            "birthdate": "01/15/1990",
-            "medications": [
-                "Aspirin",
-                "Ibuprofen"
-            ],
-            "allergies": [
-                "Peanuts",
-                "Shellfish"
-            ]
         }
     ]
 }
