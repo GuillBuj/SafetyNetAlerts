@@ -13,41 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynet_alert.exception.DataRepositoryException;
 import com.safetynet.safetynet_alert.model.Datas;
 
-// @Repository
-// public class DataRepository {
-
-//     private static final Logger logger = LogManager.getLogger(DataRepository.class);
-
-//     private static final String DATA_FILE_PATH = "src\\main\\resources\\data.json";
-//     private final ObjectMapper objectMapper;
-
-//     public DataRepository(ObjectMapper objectMapper){
-
-//         this.objectMapper = objectMapper;
-//     }
-
-//     public Datas readData() throws DataRepositoryException{
-//         try{
-//             logger.debug("Read objects from json file");
-//             return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
-//         } catch(IOException e){
-//             logger.error("Error reading data from file");
-//             throw new DataRepositoryException("Failed to read data from file");
-//         }
-//     }
-
-//     public void writeData(Datas datas) throws DataRepositoryException{
-//         try {
-//             logger.debug("Write objects to json file");
-//             objectMapper.writeValue(new File(DATA_FILE_PATH), datas);
-//         } catch (IOException e) {
-//             logger.error("Error writing data to file");
-//             throw new DataRepositoryException("Failed to write data to file");
-//         }
-//     }
-//
-//}
-
 @Repository
 public class DataRepository {
 
@@ -64,16 +29,21 @@ public class DataRepository {
         this.resourceLoader = resourceLoader;
     }
 
-    // public Datas readData() throws DataRepositoryException {
-    // try {
-    // logger.debug("Reading data from file: {}", dataFilePath);
-    // Resource resource = resourceLoader.getResource(dataFilePath);
-    // return objectMapper.readValue(resource.getInputStream(), Datas.class);
-    // } catch (IOException e) {
-    // logger.error("Error reading data from file: {}", dataFilePath, e);
-    // throw new DataRepositoryException("Failed to read data from file");
-    // }
-    // }
+    public Datas readData() throws DataRepositoryException {
+        try {
+            logger.debug("Reading data from file: {}", dataFilePath);
+
+            Resource resource = resourceLoader.getResource(dataFilePath);
+
+            logger.debug("Resource exists: {}", resource.exists());
+            logger.debug("Resource URI: {}", resource.getURI());
+
+            return objectMapper.readValue(resource.getInputStream(), Datas.class);
+        } catch (IOException e) {
+            logger.error("Error reading data from file: {}", dataFilePath, e);
+            throw new DataRepositoryException("Failed to read data from file");
+        }
+    }
 
     public void writeData(Datas datas) throws DataRepositoryException {
         try {
@@ -86,30 +56,45 @@ public class DataRepository {
         }
     }
 
-    public Datas readData() throws DataRepositoryException {
-        try {
-            logger.debug("Reading data from file: {}", dataFilePath);
-            System.out.println("Reading data from file: " + dataFilePath); // Ajout de syso
-
-            Resource resource = resourceLoader.getResource(dataFilePath);
-
-            logger.debug("Resource exists: {}", resource.exists()); // Vérifie si la ressource existe
-            System.out.println("Resource exists: " + resource.exists()); // Ajout de syso
-
-            logger.debug("Resource URI: {}", resource.getURI()); // Affiche l'URI de la ressource
-            System.out.println("Resource URI: " + resource.getURI()); // Ajout de syso
-
-            return objectMapper.readValue(resource.getInputStream(), Datas.class);
-        } catch (IOException e) {
-            logger.error("Error reading data from file: {}", dataFilePath, e);
-            System.out.println("Error reading data from file: " + dataFilePath); // Ajout de syso
-            e.printStackTrace(); // Ajout de la stack trace pour plus de détails
-            throw new DataRepositoryException("Failed to read data from file");
-        }
-    }
-
     public void clear() {
         Datas datas = new Datas();
         writeData(datas);
     }
 }
+
+// @Repository
+// public class DataRepository {
+
+// private static final Logger logger =
+// LogManager.getLogger(DataRepository.class);
+
+// private static final String DATA_FILE_PATH =
+// "src\\main\\resources\\data.json";
+// private final ObjectMapper objectMapper;
+
+// public DataRepository(ObjectMapper objectMapper){
+
+// this.objectMapper = objectMapper;
+// }
+
+// public Datas readData() throws DataRepositoryException{
+// try{
+// logger.debug("Read objects from json file");
+// return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
+// } catch(IOException e){
+// logger.error("Error reading data from file");
+// throw new DataRepositoryException("Failed to read data from file");
+// }
+// }
+
+// public void writeData(Datas datas) throws DataRepositoryException{
+// try {
+// logger.debug("Write objects to json file");
+// objectMapper.writeValue(new File(DATA_FILE_PATH), datas);
+// } catch (IOException e) {
+// logger.error("Error writing data to file");
+// throw new DataRepositoryException("Failed to write data to file");
+// }
+// }
+//
+// }
