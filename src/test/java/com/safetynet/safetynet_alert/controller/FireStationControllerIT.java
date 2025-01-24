@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.safetynet_alert.data.DatasTest;
 import com.safetynet.safetynet_alert.dto.ChildAlertChildDTO;
 import com.safetynet.safetynet_alert.dto.ChildAlertResponse;
 import com.safetynet.safetynet_alert.dto.FireResponse;
@@ -62,7 +63,7 @@ public class FireStationControllerIT {
 
     @BeforeEach
     void setUp() {
-        dataRepository.clear();
+        dataRepository.writeData(new DatasTest().getDatasFireStation());
     }
 
     @Test
@@ -80,11 +81,7 @@ public class FireStationControllerIT {
 
     @Test
     public void createFireStationTestBadRequestAlreadyExists() throws JsonProcessingException, Exception {
-        FireStation fireStation = new FireStation("3 Rory Rd", 8);
-
-        mockMvc.perform(post("/firestation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(fireStation)));
+        FireStation fireStation = new FireStation("8 SRV St", 5);
 
         mockMvc.perform(post("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -94,12 +91,7 @@ public class FireStationControllerIT {
 
     @Test
     public void updateFireStationTestOk() throws JsonProcessingException, Exception {
-        FireStation fireStationBefore = new FireStation("3 Rory Rd", 8);
-        FireStation fireStationAfter = new FireStation("3 Rory Rd", 6);
-
-        mockMvc.perform(post("/firestation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(fireStationBefore)));
+        FireStation fireStationAfter = new FireStation("8 SRV St", 5);
 
         mockMvc.perform(put("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +99,6 @@ public class FireStationControllerIT {
                 .andExpect(status().isOk());
 
         assertTrue(dataRepository.readData().getFireStations().contains(fireStationAfter));
-        assertFalse(dataRepository.readData().getFireStations().contains(fireStationBefore));
     }
 
     @Test
@@ -122,12 +113,7 @@ public class FireStationControllerIT {
 
     @Test
     public void deleteFireStationByNumberTestOk() throws JsonProcessingException, Exception {
-        int stationNumber = 8;
-        FireStation fireStation = new FireStation("3 Rory Rd", stationNumber);
-
-        mockMvc.perform(post("/firestation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(fireStation)));
+        int stationNumber = 2;
 
         mockMvc.perform(delete("/firestation")
                 .param("stationNumber", String.valueOf(stationNumber)))
@@ -141,18 +127,14 @@ public class FireStationControllerIT {
     public void deleteFireStationTestByNumberNotFound() throws JsonProcessingException, Exception {
 
         mockMvc.perform(delete("/firestation")
-                .param("stationNumber", "1"))
+                .param("stationNumber", "999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void deleteFireStationByAddressTestOk() throws JsonProcessingException, Exception {
-        String address = "3 Rory Rd";
-        FireStation fireStation = new FireStation(address, 8);
+        String address = "8 SRV St";
 
-        mockMvc.perform(post("/firestation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(fireStation)));
         mockMvc.perform(delete("/firestation")
                 .param("address", address))
                 .andExpect(status().isOk());
