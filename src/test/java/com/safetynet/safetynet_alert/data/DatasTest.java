@@ -98,4 +98,11 @@ public class DatasTest {
 
         return datas;
     }
+
+    public Datas getDatasMedicalRecord(){
+        Datas datas = new Datas();
+        datas.setMedicalRecords(List.of(new MedicalRecord("Jane","Doe", LocalDate.of(1998,1,1), List.of(), List.of("Pollen"))));
+        
+        return datas;
+        }
 }
