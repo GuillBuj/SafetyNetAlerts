@@ -112,7 +112,10 @@ public class PersonControllerIT {
 
         assertFalse(dataRepository.readData().getPersons().stream()
                     .anyMatch(person -> person.getFirstName() == personDTO.firstName()
-                                    && person.getLastName() == personDTO.lastName())); 
+                                    && person.getLastName() == personDTO.lastName()));
+        assertFalse(dataRepository.readData().getMedicalRecords().stream()
+                    .anyMatch(medicalRecord -> medicalRecord.getFirstName() == personDTO.firstName()
+                        && medicalRecord.getLastName() == personDTO.lastName()));
     }
 
     @Test
