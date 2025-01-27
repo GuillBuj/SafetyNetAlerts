@@ -51,7 +51,6 @@ public class MedicalRecordControllerIT {
     @BeforeEach
     void setUp(){
         dataRepository.writeData(new DatasTest().getDatasMedicalRecord());
-        //objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());//pour pouvoir gérer les LocalDate
     }
 

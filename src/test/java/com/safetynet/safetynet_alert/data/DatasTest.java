@@ -105,4 +105,12 @@ public class DatasTest {
         
         return datas;
         }
+
+        public Datas getDatasPerson(){
+                Datas datas = new Datas();
+                datas.setPersons(List.of(new Person(
+                        "Jane", "Doe", "123 Main St", "Springfield", "99999", "333-333-3333", "jane.doe@example.com")));
+                
+                return datas;
+                } 
 }

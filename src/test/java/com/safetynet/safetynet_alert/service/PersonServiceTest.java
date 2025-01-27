@@ -126,7 +126,7 @@ public class PersonServiceTest {
         
         //--GIVEN
         String lastName = "Harris";
-        //age has to be valid at all times
+        //age has to be valid at all times / same birthdate for the 2
         int age = Period.between(LocalDate.of(1994, 10, 30), LocalDate.now()).getYears();
         List<PersonByLastNameDTO> expectedList = List.of(
             new PersonByLastNameDTO
