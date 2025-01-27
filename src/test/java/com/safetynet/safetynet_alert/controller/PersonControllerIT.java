@@ -45,7 +45,7 @@ public class PersonControllerIT {
 
     @BeforeEach
     void setUp(){
-        dataRepository.writeData(new DatasTest().getDatasPerson());
+        dataRepository.writeData(new DatasTest().getDatasOneOfEach());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class PersonControllerIT {
 
         assertFalse(dataRepository.readData().getPersons().stream()
                     .anyMatch(person -> person.getFirstName() == personDTO.firstName()
-                                    && person.getLastName() == personDTO.lastName()));  
+                                    && person.getLastName() == personDTO.lastName())); 
     }
 
     @Test
@@ -127,7 +127,7 @@ public class PersonControllerIT {
 
     @Test
     void personInfoLastNameTest() throws Exception{
-        dataRepository.writeData(new DatasTest().getDatas());
+        dataRepository.writeData(new DatasTest().getDatasLarge());
         
         //age has to be valid at all times / same birthdate for the 2
         int age = Period.between(LocalDate.of(1994, 10, 30), LocalDate.now()).getYears();
@@ -158,7 +158,7 @@ public class PersonControllerIT {
 
     @Test
     void communityEmailTest() throws JsonProcessingException, Exception{
-        dataRepository.writeData(new DatasTest().getDatas());
+        dataRepository.writeData(new DatasTest().getDatasLarge());
 
         Set<String> emails = Set.of("amelia.scott@example.com", "evan.morris@example.com", "lily.green@example.com");
 

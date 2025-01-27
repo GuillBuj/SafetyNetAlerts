@@ -2,11 +2,6 @@ package com.safetynet.safetynet_alert.controller;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -20,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,11 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.safetynet.safetynet_alert.data.DatasTest;
 import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
-import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
-import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-import com.safetynet.safetynet_alert.service.MedicalRecordService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,7 +41,7 @@ public class MedicalRecordControllerIT {
 
     @BeforeEach
     void setUp(){
-        dataRepository.writeData(new DatasTest().getDatasMedicalRecord());
+        dataRepository.writeData(new DatasTest().getDatasOneOfEach());
         objectMapper.registerModule(new JavaTimeModule());//pour pouvoir gérer les LocalDate
     }
 

@@ -54,7 +54,7 @@ public class FireStationServiceTest {
     void setUp(){
         //TODO : voir si conditionnel
         DatasTest datasTest = new DatasTest();
-        datas = datasTest.getDatas();
+        datas = datasTest.getDatasLarge();
         when(dataRepository.readData()).thenReturn(datas);
     }
 

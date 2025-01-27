@@ -2,15 +2,6 @@ package com.safetynet.safetynet_alert.controller;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -41,12 +31,9 @@ import com.safetynet.safetynet_alert.dto.FireStationPersonDTO;
 import com.safetynet.safetynet_alert.dto.FireStationResponse;
 import com.safetynet.safetynet_alert.dto.FloodDTO;
 import com.safetynet.safetynet_alert.dto.PersonWithMedicalDTO;
-import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
-import com.safetynet.safetynet_alert.exception.NotFoundException;
 import com.safetynet.safetynet_alert.model.FireStation;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
-import com.safetynet.safetynet_alert.service.FireStationService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -63,7 +50,7 @@ public class FireStationControllerIT {
 
     @BeforeEach
     void setUp() {
-        dataRepository.writeData(new DatasTest().getDatasFireStation());
+        dataRepository.writeData(new DatasTest().getDatasOneOfEach());
     }
 
     @Test
@@ -152,109 +139,107 @@ public class FireStationControllerIT {
                 .andExpect(status().isNotFound());
     }
 
-    // @Test
-    // public void getFireStationOk() throws JsonProcessingException, Exception {
-    // int stationNumber = 1;
+    @Test
+    public void getFireStationOk() throws JsonProcessingException, Exception {
+        dataRepository.writeData(new DatasTest().getDatasLarge());
+        
+        FireStationResponse expectedResponse = 
+            new FireStationResponse(
+                Set.of(
+                    new FireStationPersonDTO("Lucas","Johnson", "101 Cherry St", "123-456-7900"),
+                    new FireStationPersonDTO("Sophia","Johnson", "101 Cherry St", "123-456-7901"),
+                    new FireStationPersonDTO("Ethan","Johnson", "101 Cherry St", "123-456-7902"),    
+                    new FireStationPersonDTO("Olivia","Johnson", "101 Cherry St", "123-456-7903"),
+                    new FireStationPersonDTO("Evan","Morris", "606 Elm St", "123-456-7912")),
+                3,
+                2);
 
-    // FireStationResponse response = new FireStationResponse(
-    // Set.of(new FireStationPersonDTO("John", "Doe", "123 Main St",
-    // "111-111-1111"),
-    // new FireStationPersonDTO("Jane", "Doe", "123 Main St", "111-111-5555")),
-    // 2,
-    // 0);
+        mockMvc.perform(get("/firestation")
+            .param("stationNumber", "1"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+    }
 
-    // when(fireStationService.getPersonsByStation(anyInt())).thenReturn(response);
+    @Test
+    public void phoneAlertTestOk() throws JsonProcessingException, Exception {
+        dataRepository.writeData(new DatasTest().getDatasLarge());
+        
+        Set<String> expectedResponse = Set.of("123-456-7910", "123-456-7911","123-456-7913");
 
-    // mockMvc.perform(get("/firestation")
-    // .param("stationNumber", "1"))
-    // .andExpect(status().isOk())
-    // .andExpect(content().json(objectMapper.writeValueAsString(response)));
+        mockMvc.perform(get("/phoneAlert")
+            .param("stationNumber", String.valueOf("3")))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+    }
 
-    // verify(fireStationService, times(1)).getPersonsByStation(stationNumber);
-    // }
+    @Test
+    public void childAlertTestOk() throws JsonProcessingException, Exception {
+        dataRepository.writeData(new DatasTest().getDatasLarge());
+        
+        String address = "101 Cherry St";
 
-    // @Test
-    // public void phoneAlertTestOk() throws JsonProcessingException, Exception {
-    // int stationNumber = 1;
+        ChildAlertResponse expectedResponse
+            = new ChildAlertResponse(
+                Set.of(
+                    new ChildAlertChildDTO("Olivia", "Johnson", 7),
+                    new ChildAlertChildDTO("Ethan", "Johnson", 9)),
+                Set.of(
+                    new Person("Lucas", "Johnson", address, "Culver", "97451", "123-456-7900", "lucas.johnson@example.com"),
+                    new Person("Sophia", "Johnson", address, "Culver", "97451", "123-456-7901", "sophia.johnson@example.com")
+                    )
+                );
 
-    // Set<String> phones = Set.of("123-456-7890", "111-111-1111");
+        mockMvc.perform(get("/childAlert")
+            .param("address", address))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+    }
 
-    // when(fireStationService.getPhoneNumbersByStation(anyInt())).thenReturn(phones);
+    @Test
+    public void fireTestOk() throws JsonProcessingException, Exception {
+        dataRepository.writeData(new DatasTest().getDatasLarge());
+        
+        FireResponse expectedResponse = new FireResponse(
+            Set.of(
+                new PersonWithMedicalDTO("Jackson", "Harris", "123-456-7910", 30, List.of("Aspirin"), List.of("Dust","Milk")),
+                new PersonWithMedicalDTO("Harper", "Harris", "123-456-7911", 30, List.of("Metformin", "Lisinopril"), List.of("Eggs", "Wheat"))
+            ),
+            3);
 
-    // mockMvc.perform(get("/phoneAlert")
-    // .param("stationNumber", String.valueOf(stationNumber)))
-    // .andExpect(status().isOk())
-    // .andExpect(content().json(objectMapper.writeValueAsString(phones)));
+        mockMvc.perform(get("/fire")
+            .param("address", "505 Oak St"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+    }
 
-    // verify(fireStationService, times(1)).getPhoneNumbersByStation(stationNumber);
-    // }
+    @Test
+    public void floodTestOk() throws JsonProcessingException, Exception {
+        dataRepository.writeData(new DatasTest().getDatasLarge());
+        
+        List<FloodDTO> expectedResponse = List.of(
+                new FloodDTO(3, 
+                    Map.of(
+                        "505 Oak St",
+                        Set.of(
+                            new PersonWithMedicalDTO("Jackson", "Harris", "123-456-7910", 30, List.of("Aspirin"), List.of("Dust", "Milk")),
+                            new PersonWithMedicalDTO("Harper", "Harris", "123-456-7911", 30, List.of("Metformin", "Lisinopril"), List.of("Eggs", "Wheat"))
+                        ),
+                        "707 Willow St",
+                        Set.of(
+                            new PersonWithMedicalDTO("Lily", "Green", "123-456-7913", 32, List.of("Insulin", "Aspirin"), List.of("Peanuts", "Soy"))
+                        )
+                    )
+                ),
+                new FloodDTO(4, 
+                    Map.of("808 Will St",
+                            Set.of(
+                                new PersonWithMedicalDTO("James", "Marshall", "123-456-7914", 32, List.of(), List.of())
+                                )))); 
 
-    // @Test
-    // public void childAlertTestOk() throws JsonProcessingException, Exception {
-    // String address = "3 Rory St";
-
-    // ChildAlertResponse response = new ChildAlertResponse(
-    // Set.of(new ChildAlertChildDTO("Eric", "Doe", 10),
-    // new ChildAlertChildDTO("Kyle", "Doe", 9)),
-    // Set.of(new Person(
-    // "John", "Doe", "123 Main St", "Springfield", "99999", "555-555-5555",
-    // "john.doe@example.com")));
-
-    // when(fireStationService.getChildrenByAdress(anyString())).thenReturn(response);
-
-    // mockMvc.perform(get("/childAlert")
-    // .param("address", address))
-    // .andExpect(status().isOk())
-    // .andExpect(content().json(objectMapper.writeValueAsString(response)));
-
-    // verify(fireStationService, times(1)).getChildrenByAdress(address);
-    // }
-
-    // @Test
-    // public void fireTestOk() throws JsonProcessingException, Exception {
-    // String address = "3 Rory St";
-
-    // FireResponse response = new FireResponse(
-    // Set.of(
-    // new PersonWithMedicalDTO("John", "Doe", "111-111-1111", 30, List.of(""),
-    // List.of("")),
-    // new PersonWithMedicalDTO("Jane", "Doe", "111-111-5555", 28, List.of(""),
-    // List.of(""))),
-    // 1);
-
-    // when(fireStationService.getPersonsByAddress(anyString())).thenReturn(response);
-
-    // mockMvc.perform(get("/fire")
-    // .param("address", address))
-    // .andExpect(status().isOk())
-    // .andExpect(content().json(objectMapper.writeValueAsString(response)));
-
-    // verify(fireStationService, times(1)).getPersonsByAddress(address);
-    // }
-
-    // @Test
-    // public void floodTestOk() throws JsonProcessingException, Exception {
-    // List<Integer> stationNumbers = List.of(1);
-
-    // List<FloodDTO> floodDTOs = List.of(
-    // new FloodDTO(
-    // 1,
-    // Map.of(
-    // "3 Rory St", Set.of(
-    // new PersonWithMedicalDTO("John", "Doe", "111-111-1111", 30, List.of(""),
-    // List.of("")),
-    // new PersonWithMedicalDTO("Jane", "Doe", "111-111-5555", 28, List.of(""),
-    // List.of(""))))));
-
-    // when(fireStationService.getHomesByStations(anyList())).thenReturn(floodDTOs);
-
-    // mockMvc.perform(get("/flood")
-    // .param("stationNumbers", "1"))
-    // .andExpect(status().isOk())
-    // .andExpect(content().json(objectMapper.writeValueAsString(floodDTOs)));
-
-    // verify(fireStationService, times(1)).getHomesByStations(stationNumbers);
-
-    // }
+        mockMvc.perform(get("/flood")
+            .param("stationNumbers", "3,4"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(expectedResponse)));
+  }
 
 }
