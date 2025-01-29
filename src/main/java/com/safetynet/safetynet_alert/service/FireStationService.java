@@ -30,17 +30,32 @@ import com.safetynet.safetynet_alert.model.MedicalRecord;
 import com.safetynet.safetynet_alert.model.Person;
 import com.safetynet.safetynet_alert.repository.DataRepository;
 
+/**
+ * Service class responsible for managing fire station operations including creating, updating,
+ * deleting fire stations, retrieving people covered by a fire station, and other related functionalities.
+ */
 @Service
 public class FireStationService {
 
     private final Logger logger = LogManager.getLogger(FireStationService.class);
     private final DataRepository dataRepository;
 
+    /**
+     * Constructs a FireStationService with the given DataRepository.
+     *
+     * @param dataRepository the DataRepository used to read and write data
+     */
     @Autowired
     public FireStationService(DataRepository dataRepository){
         this.dataRepository = dataRepository;
     }
     
+    /**
+     * Creates a new fire station-address mapping.
+     * 
+     * @param fireStation the FireStation object containing the mapping details
+     * @throws AlreadyExistsException if the mapping for the given address already exists
+     */
     public void createFireStation(FireStation fireStation){
         logger.debug("Creating firestation-address mapping({})", fireStation);
 
@@ -57,6 +72,12 @@ public class FireStationService {
         }  
     }
     
+    /**
+     * Updates an existing fire station-address mapping.
+     * 
+     * @param fireStation the FireStation object containing the updated mapping details
+     * @throws NotFoundException if no mapping for the given address exists
+     */
     public void updateFireStation(FireStation fireStation){
         logger.debug("Updating firestation-address mapping({})", fireStation);
 
@@ -74,6 +95,12 @@ public class FireStationService {
         }   
     }
 
+    /**
+     * Deletes the fire station-address mapping for the given address.
+     * 
+     * @param address the address to remove the mapping for
+     * @throws NotFoundException if no mapping for the given address exists
+     */
     public void deleteFireStation(String address){
         logger.debug("Deleting mapping for address {}", address);
 
@@ -90,6 +117,12 @@ public class FireStationService {
         } 
     }
 
+    /**
+     * Deletes the fire station-address mapping for the given station number.
+     * 
+     * @param stationNumber the station number to remove the mapping for
+     * @throws NotFoundException if no mapping for the given station number exists
+     */
     public void deleteFireStation(int stationNumber){
         logger.debug("Deleting mapping for firestation number {}", stationNumber);
         
@@ -105,6 +138,15 @@ public class FireStationService {
         }
     }
 
+    /**
+     * Retrieves the list of persons covered by a fire station, based on the station number.
+     * 
+     * @param stationNumber the station number for which the people should be retrieved
+     * @return a FireStationResponse containing the people covered by the station
+     * @throws StreamReadException if an error occurs while reading the data
+     * @throws DatabindException if an error occurs while binding the data
+     * @throws IOException if an error occurs during input/output operations
+     */
     public FireStationResponse getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
         logger.debug("Getting list of people covered by station {}", stationNumber);
 
@@ -137,6 +179,12 @@ public class FireStationService {
         return new FireStationResponse(personsDTO, nbAdults, nbChildren);
     }
 
+    /**
+     * Retrieves the phone numbers of all people covered by a fire station.
+     * 
+     * @param stationNumber the station number for which the phone numbers should be retrieved
+     * @return a set of phone numbers of people covered by the station
+     */
     public Set<String> getPhoneNumbersByStation(int stationNumber){
         logger.debug("Getting list of phone numbers of people covered by station {}", stationNumber);
         
@@ -155,6 +203,12 @@ public class FireStationService {
         return numbers;
     }
 
+    /**
+     * Retrieves the addresses of all people covered by a fire station, based on the station number.
+     * 
+     * @param stationNumber the station number for which the addresses should be retrieved
+     * @return a set of addresses of people covered by the station
+     */
     public Set<String> getAdressesByStation(int stationNumber){
         Datas datas = dataRepository.readData();
         List<FireStation> fireStations = datas.getFireStations();
@@ -165,6 +219,13 @@ public class FireStationService {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Retrieves the station number for a given address.
+     * 
+     * @param address the address for which the station number should be retrieved
+     * @return the station number that covers the given address
+     * @throws IllegalArgumentException if no station exists for the given address
+     */
     public int getStationByAddress(String address){
         Datas datas = dataRepository.readData();
 
@@ -176,6 +237,12 @@ public class FireStationService {
         return fireStation.getStation();
     }
 
+    /**
+     * Retrieves a list of children living at a given address.
+     * 
+     * @param address the address to check for children
+     * @return a ChildAlertResponse containing children and other people living at the address
+     */
     public ChildAlertResponse getChildrenByAdress(String address){
         logger.debug("Getting children by address({})", address);
 
@@ -219,6 +286,12 @@ public class FireStationService {
         return new ChildAlertResponse(children, otherPersons);
     }
 
+    /**
+     * Retrieves the list of persons with medical information by a given address.
+     * 
+     * @param address the address to check for persons
+     * @return a set of PersonWithMedicalDTO containing persons with medical information at the address
+     */
     public Set<PersonWithMedicalDTO> getPersonSetByAddress(String address){
         logger.debug("Getting persons(set) by address({})", address);
 
@@ -247,6 +320,12 @@ public class FireStationService {
         return personsDTO;
     }
     
+    /**
+     * Retrieves the list of persons living at a given address, along with the fire station information.
+     * 
+     * @param address the address to retrieve persons from
+     * @return a FireResponse containing persons at the address and their fire station
+     */
     public FireResponse getPersonsByAddress(String address){
         logger.debug("Getting persons by address({})", address);
 
@@ -254,6 +333,12 @@ public class FireStationService {
         return new FireResponse(getPersonSetByAddress(address), getStationByAddress(address));
     }
 
+    /**
+     * Retrieves the list of homes covered by multiple stations.
+     * 
+     * @param stationNumbers a list of station numbers to retrieve homes for
+     * @return a list of FloodDTO containing homes covered by each station
+     */
     public List<FloodDTO> getHomesByStations(List<Integer> stationNumbers){
         logger.debug("Getting homes by stations({})", stationNumbers);
 
@@ -266,7 +351,7 @@ public class FireStationService {
                     .collect(Collectors.toMap(
                         address -> address,
                         address -> {
-                            return getPersonSetByAddress(address);}
+                            return getPersonSetByAddress(address); }
                     ));
             
                 return new FloodDTO(stationNumber, homes);
@@ -277,6 +362,12 @@ public class FireStationService {
             return floods;
     }
 
+    /**
+     * Checks if an address is already mapped to a fire station.
+     * 
+     * @param address the address to check
+     * @return true if the address is already mapped, false otherwise
+     */
     public boolean isMapped(String address){
         return dataRepository.readData().getFireStations()
                 .stream().map(FireStation::getAddress).toList()

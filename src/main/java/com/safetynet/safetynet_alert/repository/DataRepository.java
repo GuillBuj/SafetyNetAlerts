@@ -13,22 +13,40 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.safetynet_alert.exception.DataRepositoryException;
 import com.safetynet.safetynet_alert.model.Datas;
 
+/**
+ * The `DataRepository` class is responsible for reading and writing data to a file. 
+ * It uses Jackson's `ObjectMapper` for serializing and deserializing Java objects 
+ * and provides an abstraction over file handling, interacting with a specific data file.
+ */
 @Repository
 public class DataRepository {
 
     private static final Logger logger = LogManager.getLogger(DataRepository.class);
 
-    @Value("${data.file.path}") // Chemin du fichier injecté depuis application.properties
+    @Value("${data.file.path}") // Path to the data file injected from application.properties
     private String dataFilePath;
 
     private final ObjectMapper objectMapper;
     private final ResourceLoader resourceLoader;
 
+    /**
+     * Constructor for the `DataRepository` class.
+     * 
+     * @param objectMapper The `ObjectMapper` used for serializing and deserializing objects to/from JSON.
+     * @param resourceLoader The `ResourceLoader` used for loading the file resource from the specified path.
+     */
     public DataRepository(ObjectMapper objectMapper, ResourceLoader resourceLoader) {
         this.objectMapper = objectMapper;
         this.resourceLoader = resourceLoader;
     }
 
+    /**
+     * Reads the data from the file specified by the `dataFilePath`. It returns the data as an instance 
+     * of the `Datas` class, which is typically a wrapper around the data being stored.
+     * 
+     * @return The data read from the file as an instance of `Datas`.
+     * @throws DataRepositoryException If an error occurs while reading the data from the file.
+     */
     public Datas readData() throws DataRepositoryException {
         try {
             logger.debug("Reading data from file: {}", dataFilePath);
@@ -45,6 +63,12 @@ public class DataRepository {
         }
     }
 
+    /**
+     * Writes the given `Datas` object to the file specified by `dataFilePath`.
+     * 
+     * @param datas The `Datas` object to be written to the file.
+     * @throws DataRepositoryException If an error occurs while writing the data to the file.
+     */
     public void writeData(Datas datas) throws DataRepositoryException {
         try {
             logger.debug("Writing data to file: {}", dataFilePath);
@@ -56,11 +80,16 @@ public class DataRepository {
         }
     }
 
+    /**
+     * Clears the current data in the file by writing an empty `Datas` object to the file.
+     * This can be used for resetting or clearing all data.
+     */
     public void clear() {
         Datas datas = new Datas();
         writeData(datas);
     }
 }
+
 
 // @Repository
 // public class DataRepository {
