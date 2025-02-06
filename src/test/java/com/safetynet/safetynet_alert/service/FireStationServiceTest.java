@@ -247,21 +247,4 @@ public class FireStationServiceTest {
         //--THEN
         assertEquals(expectedResponse, actualResponse); 
     } 
-
-    /* -----------------------------------TEMPLATE
-    @Test
-    void Test(){
-        
-    //--GIVEN
-        
-
-        //--WHEN
-        
-
-        //--THEN
-         
-    } 
-     
-     */
-
 }

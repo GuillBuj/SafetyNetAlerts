@@ -110,8 +110,8 @@ public class MedicalRecordControllerIT {
                 .andExpect(status().isOk());
 
         assertFalse(dataRepository.readData().getMedicalRecords().stream()
-                    .anyMatch(medicalRecord -> medicalRecord.getFirstName() == person.firstName()
-                                            && medicalRecord.getLastName() == person.lastName()));
+                    .anyMatch(medicalRecord -> medicalRecord.getFirstName().equals(person.firstName())
+                                            && medicalRecord.getLastName().equals(person.lastName())));
     }
 
     @Test
@@ -123,6 +123,4 @@ public class MedicalRecordControllerIT {
                 .content(objectMapper.writeValueAsString(person)))
                 .andExpect(status().isNotFound());
     }
-
-
 }
