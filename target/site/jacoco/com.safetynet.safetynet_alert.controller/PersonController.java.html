@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersonController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">safetynet-alert</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.safetynet_alert.controller</a> &gt; <span class="el_source">PersonController.java</span></div><h1>PersonController.java</h1><pre class="source lang-java linenums">package com.safetynet.safetynet_alert.controller;
+
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.safetynet.safetynet_alert.dto.PersonByLastNameDTO;
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
+import com.safetynet.safetynet_alert.model.Person;
+import com.safetynet.safetynet_alert.service.PersonService;
+
+/**
+ * Controller for managing person-related operations.
+ */
+@RestController
+@RequestMapping
+public class PersonController {
+    private final PersonService personService;
+
+    /**
+     * Constructor to initialize PersonController with PersonService.
+     * 
+     * @param personService The service handling person operations.
+     */
+    @Autowired
+<span class="fc" id="L37">    public PersonController(PersonService personService) {</span>
+<span class="fc" id="L38">        this.personService = personService;</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Creates a new person record.
+     * 
+     * @param person The person to be created.
+     */
+    @PostMapping(&quot;/person&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createPerson(@RequestBody Person person) {
+<span class="fc" id="L49">        personService.createPerson(person);</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * Updates an existing person record.
+     * 
+     * @param person The person with updated information.
+     */
+    @PutMapping(&quot;/person&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void updatePerson(@RequestBody Person person) {
+<span class="fc" id="L60">        personService.updatePerson(person);</span>
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Deletes a person record based on the full name.
+     * 
+     * @param person The DTO containing the full name of the person to delete.
+     */
+    @DeleteMapping(&quot;/person&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void deletePerson(@RequestBody PersonFullNameDTO person) {
+<span class="fc" id="L71">        personService.deletePerson(person);</span>
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Retrieves a list of persons by last name.
+     * 
+     * @param lastName The last name to filter persons.
+     * @return A list of persons with the given last name.
+     */
+    @GetMapping(&quot;/personInfoLastName&quot;)
+    public List&lt;PersonByLastNameDTO&gt; getPersonsByLastName(@RequestParam String lastName) {
+<span class="fc" id="L82">        return personService.getPersonsByLastName(lastName);</span>
+    }
+
+    /**
+     * Retrieves a set of email addresses for persons living in a specified city.
+     * 
+     * @param city The city to filter persons.
+     * @return A set of email addresses of persons living in the specified city.
+     */
+    @GetMapping(&quot;/communityEmail&quot;)
+    public Set&lt;String&gt; getEmailsByCity(@RequestParam String city) {
+<span class="fc" id="L93">        return personService.getEmailsByCity(city);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

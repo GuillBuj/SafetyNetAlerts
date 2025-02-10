@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FireStationController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">safetynet-alert</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.safetynet_alert.controller</a> &gt; <span class="el_source">FireStationController.java</span></div><h1>FireStationController.java</h1><pre class="source lang-java linenums">package com.safetynet.safetynet_alert.controller;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.dto.ChildAlertResponse;
+import com.safetynet.safetynet_alert.dto.FireResponse;
+import com.safetynet.safetynet_alert.dto.FireStationResponse;
+import com.safetynet.safetynet_alert.dto.FloodDTO;
+import com.safetynet.safetynet_alert.model.FireStation;
+import com.safetynet.safetynet_alert.service.FireStationService;
+
+/**
+ * Controller for managing fire station-related endpoints.
+ */
+@RestController
+public class FireStationController {
+    private final FireStationService fireStationService;
+
+    /**
+     * Constructor to initialize FireStationController with FireStationService.
+     * 
+     * @param fireStationService The service handling fire station operations.
+     */
+    @Autowired
+<span class="fc" id="L40">    public FireStationController(FireStationService fireStationService) {</span>
+<span class="fc" id="L41">        this.fireStationService = fireStationService;</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Creates a new fire station.
+     * 
+     * @param fireStation The fire station to be created.
+     */
+    @PostMapping(&quot;/firestation&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createFireStation(@RequestBody FireStation fireStation) {
+<span class="fc" id="L52">        fireStationService.createFireStation(fireStation);</span>
+<span class="fc" id="L53">    }</span>
+
+    /**
+     * Updates an existing fire station.
+     * 
+     * @param fireStation The fire station with updated information.
+     */
+    @PutMapping(&quot;/firestation&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateFireStation(@RequestBody FireStation fireStation) {
+<span class="fc" id="L63">        fireStationService.updateFireStation(fireStation);</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * Deletes a fire station based on station number or address.
+     * 
+     * @param stationNumber The station number to delete (optional).
+     * @param address The address of the fire station to delete (optional).
+     */
+    @DeleteMapping(&quot;/firestation&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteFireStation(@RequestParam(required = false) Integer stationNumber,
+            @RequestParam(required = false) String address){
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (stationNumber != null) {</span>
+<span class="fc" id="L77">            fireStationService.deleteFireStation(stationNumber);</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        } else if (address != null) {</span>
+<span class="fc" id="L79">            fireStationService.deleteFireStation(address);</span>
+        }
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * Retrieves persons covered by a specific fire station.
+     * 
+     * @param stationNumber The fire station number.
+     * @return A FireStationResponse object containing relevant data.
+     * @throws StreamReadException If an error occurs while reading the stream.
+     * @throws DatabindException If an error occurs while binding data.
+     * @throws IOException If an I/O exception occurs.
+     */
+    @GetMapping(&quot;/firestation&quot;)
+    public FireStationResponse getPersonsByStation(@RequestParam int stationNumber)
+            throws StreamReadException, DatabindException, IOException {
+
+<span class="fc" id="L96">        return fireStationService.getPersonsByStation(stationNumber);</span>
+    }
+
+    /**
+     * Retrieves phone numbers of residents covered by a fire station.
+     * 
+     * @param stationNumber The fire station number.
+     * @return A set of phone numbers.
+     */
+    @GetMapping(&quot;/phoneAlert&quot;)
+    public Set&lt;String&gt; getPhoneNumbersByStation(@RequestParam int stationNumber){
+
+<span class="fc" id="L108">        return fireStationService.getPhoneNumbersByStation(stationNumber);</span>
+    }
+
+    /**
+     * Retrieves children living at a specific address.
+     * 
+     * @param address The address to search for children.
+     * @return A ChildAlertResponse containing children and family details.
+     */
+    @GetMapping(&quot;/childAlert&quot;)
+    public ChildAlertResponse getChildrenByAddress(@RequestParam String address){
+
+<span class="fc" id="L120">        return fireStationService.getChildrenByAdress(address);</span>
+    }
+
+    /**
+     * Retrieves persons living at a specific address in case of a fire.
+     * 
+     * @param address The address to search.
+     * @return A FireResponse containing residents' information.
+     */
+    @GetMapping(&quot;/fire&quot;)
+    public FireResponse getPersonsByAddress(@RequestParam String address){
+
+<span class="fc" id="L132">        return fireStationService.getPersonsByAddress(address);</span>
+    }
+
+    /**
+     * Retrieves homes covered by multiple fire stations.
+     * 
+     * @param stationNumbers A list of fire station numbers.
+     * @return A list of FloodDTO containing household details.
+     */
+    @GetMapping(&quot;/flood&quot;)
+    public List&lt;FloodDTO&gt; getHomesByStation(@RequestParam List&lt;Integer&gt; stationNumbers){
+
+<span class="fc" id="L144">        return fireStationService.getHomesByStations(stationNumbers);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

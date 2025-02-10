@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MedicalRecordService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">safetynet-alert</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.safetynet_alert.service</a> &gt; <span class="el_source">MedicalRecordService.java</span></div><h1>MedicalRecordService.java</h1><pre class="source lang-java linenums">package com.safetynet.safetynet_alert.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.safetynet.safetynet_alert.dto.PersonFullNameDTO;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
+import com.safetynet.safetynet_alert.model.Datas;
+import com.safetynet.safetynet_alert.model.MedicalRecord;
+import com.safetynet.safetynet_alert.repository.DataRepository;
+
+/**
+ * Service class for handling operations related to medical records.
+ * It provides methods to create, update, and delete medical records.
+ */
+@Service
+public class MedicalRecordService {
+
+<span class="fc" id="L25">    private final Logger logger = LogManager.getLogger(MedicalRecordService.class);</span>
+    private final DataRepository dataRepository;
+
+    /**
+     * Constructor to inject the DataRepository dependency.
+     *
+     * @param dataRepository the repository to interact with the data store
+     */
+    @Autowired
+<span class="fc" id="L34">    public MedicalRecordService(DataRepository dataRepository){</span>
+<span class="fc" id="L35">        this.dataRepository = dataRepository;</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Creates a new medical record if it does not already exist.
+     * Throws an {@link AlreadyExistsException} if the record already exists.
+     *
+     * @param medicalRecordToCreate the medical record to be created
+     */
+    public void createMedicalRecord(MedicalRecord medicalRecordToCreate){
+<span class="fc" id="L45">        logger.debug(&quot;Creating medical record ({})&quot;, medicalRecordToCreate);</span>
+
+<span class="fc" id="L47">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L48">        List&lt;MedicalRecord&gt; medicalRecords = datas.getMedicalRecords();</span>
+<span class="fc" id="L49">        PersonFullNameDTO personFullNameDTO = new PersonFullNameDTO(medicalRecordToCreate.getFirstName(), medicalRecordToCreate.getLastName());</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">        if (!personFullNameDTO.existsInMeds(medicalRecords)) {</span>
+<span class="fc" id="L52">            medicalRecords.add(medicalRecordToCreate);</span>
+<span class="fc" id="L53">            datas.setMedicalRecords(medicalRecords);</span>
+<span class="fc" id="L54">            dataRepository.writeData(datas);</span>
+<span class="fc" id="L55">            logger.info(&quot;Medical record created ({})&quot;, medicalRecordToCreate);</span>
+        } else {
+<span class="fc" id="L57">            logger.error(&quot;Medical record already exists({})&quot;, medicalRecordToCreate);</span>
+<span class="fc" id="L58">            throw new AlreadyExistsException(&quot;Medical record already exists (&quot; + personFullNameDTO + &quot;)&quot;);</span>
+        }
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * Updates an existing medical record.
+     * Throws a {@link NotFoundException} if the medical record is not found.
+     *
+     * @param updatedMedicalRecord the updated medical record
+     */
+    public void updateMedicalRecord(MedicalRecord updatedMedicalRecord){
+<span class="fc" id="L69">        logger.debug(&quot;Updating medical record({})&quot;, updatedMedicalRecord);</span>
+
+<span class="fc" id="L71">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L72">        List&lt;MedicalRecord&gt; medicalRecords = datas.getMedicalRecords();</span>
+<span class="fc" id="L73">        PersonFullNameDTO medicalRecordToUpdateDTO = new PersonFullNameDTO(updatedMedicalRecord.getFirstName(), updatedMedicalRecord.getLastName());</span>
+
+<span class="fc" id="L75">        Optional&lt;MedicalRecord&gt; medicalRecordToUpdate = medicalRecordToUpdateDTO.findMedicalRecord(medicalRecords);</span>
+
+<span class="fc" id="L77">        medicalRecordToUpdate.ifPresentOrElse(</span>
+                medicalRecord -&gt; {
+<span class="fc" id="L79">                    medicalRecords.remove(medicalRecord);</span>
+<span class="fc" id="L80">                    medicalRecords.add(updatedMedicalRecord);</span>
+<span class="fc" id="L81">                    datas.setMedicalRecords(medicalRecords);</span>
+<span class="fc" id="L82">                    dataRepository.writeData(datas);</span>
+<span class="fc" id="L83">                    logger.info(&quot;Medical record updated ({})&quot;, updatedMedicalRecord);</span>
+<span class="fc" id="L84">                },</span>
+                () -&gt; {
+<span class="fc" id="L86">                    logger.error(&quot;Medical record not found ({} {})&quot;, medicalRecordToUpdateDTO.firstName(), medicalRecordToUpdateDTO.lastName());</span>
+<span class="fc" id="L87">                    throw new NotFoundException(&quot;Medical record not found (&quot; + medicalRecordToUpdateDTO + &quot;)&quot;);</span>
+                }
+        );
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Deletes a medical record based on the provided person full name.
+     * Throws a {@link NotFoundException} if the medical record is not found.
+     *
+     * @param medicalRecordDTO the full name of the person whose medical record is to be deleted
+     */
+    public void deleteMedicalRecord(PersonFullNameDTO medicalRecordDTO){
+<span class="fc" id="L99">        logger.debug(&quot;Deleting medical record ({})&quot;, medicalRecordDTO);</span>
+
+<span class="fc" id="L101">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L102">        List&lt;MedicalRecord&gt; medicalRecords = datas.getMedicalRecords();</span>
+
+<span class="fc" id="L104">        Optional&lt;MedicalRecord&gt; medicalRecordToDelete = medicalRecordDTO.findMedicalRecord(medicalRecords);</span>
+
+<span class="fc" id="L106">        medicalRecordToDelete.ifPresentOrElse(</span>
+                medicalRecord -&gt;  {
+<span class="fc" id="L108">                    medicalRecords.remove(medicalRecord);</span>
+<span class="fc" id="L109">                    datas.setMedicalRecords(medicalRecords);</span>
+<span class="fc" id="L110">                    dataRepository.writeData(datas);</span>
+<span class="fc" id="L111">                    logger.info(&quot;Medical record deleted ({})&quot;, medicalRecordDTO);</span>
+<span class="fc" id="L112">                },</span>
+                () -&gt; {
+<span class="fc" id="L114">                    logger.error(&quot;Medical record not found ({} {})&quot;, medicalRecordDTO.firstName(), medicalRecordDTO.lastName());</span>
+<span class="fc" id="L115">                    throw new NotFoundException(&quot;Medical record not found (&quot; + medicalRecordDTO + &quot;)&quot;);</span>
+                }
+        );
+<span class="fc" id="L118">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

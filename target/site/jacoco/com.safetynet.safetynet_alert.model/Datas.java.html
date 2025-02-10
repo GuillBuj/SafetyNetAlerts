@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Datas.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">safetynet-alert</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.safetynet_alert.model</a> &gt; <span class="el_source">Datas.java</span></div><h1>Datas.java</h1><pre class="source lang-java linenums">package com.safetynet.safetynet_alert.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+/**
+ * The `Datas` class serves as a container for various types of data related to the safety net system. 
+ * It holds lists of `Person`, `FireStation`, and `MedicalRecord` objects that are part of the data 
+ * to be serialized and deserialized from a file.
+ * &lt;p&gt;
+ * This class uses Jackson annotations to map JSON properties to Java fields and is used 
+ * for storing the application's core data.
+ * &lt;/p&gt;
+ */
+@Data
+public class Datas {
+
+    @JsonProperty(&quot;persons&quot;) // Maps the &quot;persons&quot; field in the JSON to the 'persons' list
+    private List&lt;Person&gt; persons;
+    
+    @JsonProperty(&quot;firestations&quot;) // Maps the &quot;firestations&quot; field in the JSON to the 'fireStations' list
+    private List&lt;FireStation&gt; fireStations;
+    
+    @JsonProperty(&quot;medicalrecords&quot;) // Maps the &quot;medicalrecords&quot; field in the JSON to the 'medicalRecords' list
+    private List&lt;MedicalRecord&gt; medicalRecords;
+
+    /**
+     * Default constructor that initializes the lists for persons, fire stations, and medical records.
+     */
+<span class="fc" id="L34">    public Datas(){</span>
+<span class="fc" id="L35">        this.persons = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L36">        this.fireStations = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">        this.medicalRecords = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L38">    }</span>
+ 
+    /**
+     * Converts the `Datas` object to a string representation. This method provides a readable 
+     * format for displaying the contents of the `Datas` object, including lists of persons, fire stations,
+     * and medical records.
+     * 
+     * @return A string representation of the `Datas` object, including details of persons, 
+     *         fire stations, and medical records.
+     */
+    @Override
+    public String toString(){
+<span class="nc" id="L50">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="nc" id="L52">        sb.append(&quot;Persons:\n&quot;);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        for(Person person : persons){</span>
+<span class="nc" id="L54">            sb.append(person).append(&quot;\n&quot;);</span>
+<span class="nc" id="L55">        }</span>
+
+<span class="nc" id="L57">        sb.append(&quot;\nFire Stations:\n&quot;);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        for (FireStation fireStation : fireStations) {</span>
+<span class="nc" id="L59">            sb.append(fireStation).append(&quot;\n&quot;);</span>
+<span class="nc" id="L60">        }</span>
+
+<span class="nc" id="L62">        sb.append(&quot;\nMedical Records:\n&quot;);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        for (MedicalRecord medicalRecord : medicalRecords) {</span>
+<span class="nc" id="L64">            sb.append(medicalRecord).append(&quot;\n&quot;);</span>
+<span class="nc" id="L65">        }</span>
+
+<span class="nc" id="L67">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

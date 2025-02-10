@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">safetynet-alert</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.safetynet_alert.repository</a> &gt; <span class="el_source">DataRepository.java</span></div><h1>DataRepository.java</h1><pre class="source lang-java linenums">package com.safetynet.safetynet_alert.repository;
+
+import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.safetynet_alert.exception.DataRepositoryException;
+import com.safetynet.safetynet_alert.model.Datas;
+
+/**
+ * The `DataRepository` class is responsible for reading and writing data to a file. 
+ * It uses Jackson's `ObjectMapper` for serializing and deserializing Java objects 
+ * and provides an abstraction over file handling, interacting with a specific data file.
+ */
+@Repository
+public class DataRepository {
+
+<span class="fc" id="L24">    private static final Logger logger = LogManager.getLogger(DataRepository.class);</span>
+
+    @Value(&quot;${data.file.path}&quot;) // Path to the data file injected from application.properties
+    private String dataFilePath;
+
+    private final ObjectMapper objectMapper;
+    private final ResourceLoader resourceLoader;
+
+    /**
+     * Constructor for the `DataRepository` class.
+     * 
+     * @param objectMapper The `ObjectMapper` used for serializing and deserializing objects to/from JSON.
+     * @param resourceLoader The `ResourceLoader` used for loading the file resource from the specified path.
+     */
+<span class="fc" id="L38">    public DataRepository(ObjectMapper objectMapper, ResourceLoader resourceLoader) {</span>
+<span class="fc" id="L39">        this.objectMapper = objectMapper;</span>
+<span class="fc" id="L40">        this.resourceLoader = resourceLoader;</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Reads the data from the file specified by the `dataFilePath`. It returns the data as an instance 
+     * of the `Datas` class, which is typically a wrapper around the data being stored.
+     * 
+     * @return The data read from the file as an instance of `Datas`.
+     * @throws DataRepositoryException If an error occurs while reading the data from the file.
+     */
+    public Datas readData() throws DataRepositoryException {
+        try {
+<span class="fc" id="L52">            logger.debug(&quot;Reading data from file: {}&quot;, dataFilePath);</span>
+
+<span class="fc" id="L54">            Resource resource = resourceLoader.getResource(dataFilePath);</span>
+
+<span class="fc" id="L56">            logger.debug(&quot;Resource exists: {}&quot;, resource.exists());</span>
+<span class="fc" id="L57">            logger.debug(&quot;Resource URI: {}&quot;, resource.getURI());</span>
+
+<span class="fc" id="L59">            return objectMapper.readValue(resource.getInputStream(), Datas.class);</span>
+<span class="nc" id="L60">        } catch (IOException e) {</span>
+<span class="nc" id="L61">            logger.error(&quot;Error reading data from file: {}&quot;, dataFilePath, e);</span>
+<span class="nc" id="L62">            throw new DataRepositoryException(&quot;Failed to read data from file&quot;);</span>
+        }
+    }
+
+    /**
+     * Writes the given `Datas` object to the file specified by `dataFilePath`.
+     * 
+     * @param datas The `Datas` object to be written to the file.
+     * @throws DataRepositoryException If an error occurs while writing the data to the file.
+     */
+    public void writeData(Datas datas) throws DataRepositoryException {
+        try {
+<span class="fc" id="L74">            logger.debug(&quot;Writing data to file: {}&quot;, dataFilePath);</span>
+<span class="fc" id="L75">            Resource resource = resourceLoader.getResource(dataFilePath);</span>
+<span class="fc" id="L76">            objectMapper.writeValue(resource.getFile(), datas);</span>
+<span class="nc" id="L77">        } catch (IOException e) {</span>
+<span class="nc" id="L78">            logger.error(&quot;Error writing data to file: {}&quot;, dataFilePath, e);</span>
+<span class="nc" id="L79">            throw new DataRepositoryException(&quot;Failed to write data to file&quot;);</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">    }</span>
+
+    /**
+     * Clears the current data in the file by writing an empty `Datas` object to the file.
+     * This can be used for resetting or clearing all data.
+     */
+    public void clear() {
+<span class="nc" id="L88">        Datas datas = new Datas();</span>
+<span class="nc" id="L89">        writeData(datas);</span>
+<span class="nc" id="L90">    }</span>
+}
+
+
+// @Repository
+// public class DataRepository {
+
+// private static final Logger logger =
+// LogManager.getLogger(DataRepository.class);
+
+// private static final String DATA_FILE_PATH =
+// &quot;src\\main\\resources\\data.json&quot;;
+// private final ObjectMapper objectMapper;
+
+// public DataRepository(ObjectMapper objectMapper){
+
+// this.objectMapper = objectMapper;
+// }
+
+// public Datas readData() throws DataRepositoryException{
+// try{
+// logger.debug(&quot;Read objects from json file&quot;);
+// return objectMapper.readValue(new File(DATA_FILE_PATH), Datas.class);
+// } catch(IOException e){
+// logger.error(&quot;Error reading data from file&quot;);
+// throw new DataRepositoryException(&quot;Failed to read data from file&quot;);
+// }
+// }
+
+// public void writeData(Datas datas) throws DataRepositoryException{
+// try {
+// logger.debug(&quot;Write objects to json file&quot;);
+// objectMapper.writeValue(new File(DATA_FILE_PATH), datas);
+// } catch (IOException e) {
+// logger.error(&quot;Error writing data to file&quot;);
+// throw new DataRepositoryException(&quot;Failed to write data to file&quot;);
+// }
+// }
+//
+// }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

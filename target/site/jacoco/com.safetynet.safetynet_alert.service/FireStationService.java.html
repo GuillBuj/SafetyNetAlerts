@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FireStationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">safetynet-alert</a> &gt; <a href="index.source.html" class="el_package">com.safetynet.safetynet_alert.service</a> &gt; <span class="el_source">FireStationService.java</span></div><h1>FireStationService.java</h1><pre class="source lang-java linenums">package com.safetynet.safetynet_alert.service;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.safetynet.safetynet_alert.dto.ChildAlertChildDTO;
+import com.safetynet.safetynet_alert.dto.ChildAlertResponse;
+import com.safetynet.safetynet_alert.dto.FireResponse;
+import com.safetynet.safetynet_alert.dto.FireStationPersonDTO;
+import com.safetynet.safetynet_alert.dto.FireStationResponse;
+import com.safetynet.safetynet_alert.dto.FloodDTO;
+import com.safetynet.safetynet_alert.dto.PersonWithMedicalDTO;
+import com.safetynet.safetynet_alert.exception.AlreadyExistsException;
+import com.safetynet.safetynet_alert.exception.NotFoundException;
+import com.safetynet.safetynet_alert.model.Datas;
+import com.safetynet.safetynet_alert.model.FireStation;
+import com.safetynet.safetynet_alert.model.MedicalRecord;
+import com.safetynet.safetynet_alert.model.Person;
+import com.safetynet.safetynet_alert.repository.DataRepository;
+
+/**
+ * Service class responsible for managing fire station operations including creating, updating,
+ * deleting fire stations, retrieving people covered by a fire station, and other related functionalities.
+ */
+@Service
+public class FireStationService {
+
+<span class="fc" id="L40">    private final Logger logger = LogManager.getLogger(FireStationService.class);</span>
+    private final DataRepository dataRepository;
+
+    /**
+     * Constructs a FireStationService with the given DataRepository.
+     *
+     * @param dataRepository the DataRepository used to read and write data
+     */
+    @Autowired
+<span class="fc" id="L49">    public FireStationService(DataRepository dataRepository){</span>
+<span class="fc" id="L50">        this.dataRepository = dataRepository;</span>
+<span class="fc" id="L51">    }</span>
+    
+    /**
+     * Creates a new fire station-address mapping.
+     * 
+     * @param fireStation the FireStation object containing the mapping details
+     * @throws AlreadyExistsException if the mapping for the given address already exists
+     */
+    public void createFireStation(FireStation fireStation){
+<span class="fc" id="L60">        logger.debug(&quot;Creating firestation-address mapping({})&quot;, fireStation);</span>
+
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if(!isMapped(fireStation.getAddress())){</span>
+<span class="fc" id="L63">            Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L64">            List&lt;FireStation&gt; fireStations = datas.getFireStations();    </span>
+<span class="fc" id="L65">            fireStations.add(fireStation);</span>
+<span class="fc" id="L66">            datas.setFireStations(fireStations);</span>
+<span class="fc" id="L67">            dataRepository.writeData(datas);</span>
+<span class="fc" id="L68">            logger.info(&quot;Firestation-address mapping created({})&quot;, fireStation);</span>
+<span class="fc" id="L69">        } else{</span>
+<span class="fc" id="L70">            logger.error(&quot;Mapping for this address already exists({})&quot;, fireStation);</span>
+<span class="fc" id="L71">            throw new AlreadyExistsException(&quot;Mapping for this address already exists: &quot; + fireStation);</span>
+        }  
+<span class="fc" id="L73">    }</span>
+    
+    /**
+     * Updates an existing fire station-address mapping.
+     * 
+     * @param fireStation the FireStation object containing the updated mapping details
+     * @throws NotFoundException if no mapping for the given address exists
+     */
+    public void updateFireStation(FireStation fireStation){
+<span class="fc" id="L82">        logger.debug(&quot;Updating firestation-address mapping({})&quot;, fireStation);</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if(isMapped(fireStation.getAddress())){</span>
+<span class="fc" id="L85">            Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L86">            List&lt;FireStation&gt; fireStations = datas.getFireStations();</span>
+<span class="fc" id="L87">            fireStations.removeIf(fireStationTest -&gt; fireStationTest.getAddress().equals(fireStation.getAddress()));</span>
+<span class="fc" id="L88">            fireStations.add(fireStation);</span>
+<span class="fc" id="L89">            datas.setFireStations(fireStations);</span>
+<span class="fc" id="L90">            dataRepository.writeData(datas);</span>
+<span class="fc" id="L91">            logger.info(&quot;Firestation-address mapping updated({})&quot;, fireStation);</span>
+<span class="fc" id="L92">        } else{</span>
+<span class="fc" id="L93">            logger.error(&quot;Mapping for this address not found ({})&quot;, fireStation.getAddress());</span>
+<span class="fc" id="L94">            throw new NotFoundException(&quot;Mapping for this address not found (&quot; + fireStation.getAddress() + &quot;)&quot;);</span>
+        }   
+<span class="fc" id="L96">    }</span>
+
+    /**
+     * Deletes the fire station-address mapping for the given address.
+     * 
+     * @param address the address to remove the mapping for
+     * @throws NotFoundException if no mapping for the given address exists
+     */
+    public void deleteFireStation(String address){
+<span class="fc" id="L105">        logger.debug(&quot;Deleting mapping for address {}&quot;, address);</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if(isMapped(address)){</span>
+<span class="fc" id="L108">            Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L109">            List&lt;FireStation&gt; fireStations = datas.getFireStations();</span>
+<span class="fc" id="L110">            fireStations.removeIf(fireStation -&gt; fireStation.getAddress().equalsIgnoreCase(address));            </span>
+<span class="fc" id="L111">            datas.setFireStations(fireStations);</span>
+<span class="fc" id="L112">            dataRepository.writeData(datas);</span>
+<span class="fc" id="L113">            logger.info(&quot;Firestation-address mapping deleted for address({})&quot;, address);</span>
+<span class="fc" id="L114">        } else{</span>
+<span class="fc" id="L115">            logger.error(&quot;Mapping for this address not found ({})&quot;, address);</span>
+<span class="fc" id="L116">            throw new NotFoundException(&quot;Mapping for this address not found (&quot; + address + &quot;)&quot;);</span>
+        } 
+<span class="fc" id="L118">    }</span>
+
+    /**
+     * Deletes the fire station-address mapping for the given station number.
+     * 
+     * @param stationNumber the station number to remove the mapping for
+     * @throws NotFoundException if no mapping for the given station number exists
+     */
+    public void deleteFireStation(int stationNumber){
+<span class="fc" id="L127">        logger.debug(&quot;Deleting mapping for firestation number {}&quot;, stationNumber);</span>
+        
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if(!getAdressesByStation(stationNumber).isEmpty()){</span>
+<span class="fc" id="L130">            Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L131">            List&lt;FireStation&gt; fireStations = datas.getFireStations();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            fireStations.removeIf(fireStation -&gt; fireStation.getStation() == stationNumber);</span>
+<span class="fc" id="L133">            datas.setFireStations(fireStations);</span>
+<span class="fc" id="L134">            dataRepository.writeData(datas);</span>
+<span class="fc" id="L135">        } else{</span>
+<span class="fc" id="L136">            logger.error(&quot;Mapping for this station not found ({})&quot;, stationNumber);</span>
+<span class="fc" id="L137">            throw new NotFoundException(&quot;Mapping for this station not found (&quot; + stationNumber + &quot;)&quot;);</span>
+        }
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * Retrieves the list of persons covered by a fire station, based on the station number.
+     * 
+     * @param stationNumber the station number for which the people should be retrieved
+     * @return a FireStationResponse containing the people covered by the station
+     * @throws StreamReadException if an error occurs while reading the data
+     * @throws DatabindException if an error occurs while binding the data
+     * @throws IOException if an error occurs during input/output operations
+     */
+    public FireStationResponse getPersonsByStation(int stationNumber) throws StreamReadException, DatabindException, IOException{
+<span class="fc" id="L151">        logger.debug(&quot;Getting list of people covered by station {}&quot;, stationNumber);</span>
+
+<span class="fc" id="L153">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L154">        PersonService personService = new PersonService(dataRepository);</span>
+
+<span class="fc" id="L156">        Set &lt;String&gt; addresses = getAdressesByStation(stationNumber);</span>
+        
+<span class="fc" id="L158">        Set&lt;Person&gt; persons = datas.getPersons().stream()</span>
+<span class="fc" id="L159">                .filter(person -&gt; addresses.contains(person.getAddress()))</span>
+<span class="fc" id="L160">                .collect(Collectors.toSet());</span>
+<span class="fc" id="L161">        Set&lt;FireStationPersonDTO&gt; personsDTO = persons.stream()</span>
+<span class="fc" id="L162">                .map(person -&gt; new FireStationPersonDTO(</span>
+<span class="fc" id="L163">                    person.getFirstName(),</span>
+<span class="fc" id="L164">                    person.getLastName(),</span>
+<span class="fc" id="L165">                    person.getAddress(),</span>
+<span class="fc" id="L166">                    person.getPhone()))</span>
+<span class="fc" id="L167">                .collect(Collectors.toSet());       </span>
+        
+<span class="fc" id="L169">        int nbAdults=0, nbChildren=0;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for(Person person:persons){</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            if(personService.isAdult(person)){</span>
+<span class="fc" id="L172">                nbAdults++;</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">            } else if(personService.isChild(person)){</span>
+<span class="fc" id="L174">                nbChildren++;</span>
+            }
+<span class="fc" id="L176">        }</span>
+
+<span class="fc" id="L178">        logger.info(&quot;List of people covered by station {}: {}; {} adults; {} children&quot;, stationNumber, personsDTO, nbAdults, nbChildren);</span>
+<span class="fc" id="L179">        return new FireStationResponse(personsDTO, nbAdults, nbChildren);</span>
+    }
+
+    /**
+     * Retrieves the phone numbers of all people covered by a fire station.
+     * 
+     * @param stationNumber the station number for which the phone numbers should be retrieved
+     * @return a set of phone numbers of people covered by the station
+     */
+    public Set&lt;String&gt; getPhoneNumbersByStation(int stationNumber){
+<span class="fc" id="L189">        logger.debug(&quot;Getting list of phone numbers of people covered by station {}&quot;, stationNumber);</span>
+        
+<span class="fc" id="L191">        Datas datas = dataRepository.readData();</span>
+
+<span class="fc" id="L193">        Set &lt;String&gt; addresses = getAdressesByStation(stationNumber);</span>
+<span class="fc" id="L194">        Set&lt;Person&gt; persons = datas.getPersons().stream()</span>
+<span class="fc" id="L195">            .filter(person -&gt; addresses.contains(person.getAddress()))</span>
+<span class="fc" id="L196">            .collect(Collectors.toSet());</span>
+        
+<span class="fc" id="L198">        Set&lt;String&gt; numbers = persons.stream()</span>
+<span class="fc" id="L199">                                .map(person -&gt; person.getPhone())</span>
+<span class="fc" id="L200">                                .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L202">        logger.info(&quot;List of phone numbers of people covered by station {}: {}&quot;, stationNumber, numbers);</span>
+<span class="fc" id="L203">        return numbers;</span>
+    }
+
+    /**
+     * Retrieves the addresses of all people covered by a fire station, based on the station number.
+     * 
+     * @param stationNumber the station number for which the addresses should be retrieved
+     * @return a set of addresses of people covered by the station
+     */
+    public Set&lt;String&gt; getAdressesByStation(int stationNumber){
+<span class="fc" id="L213">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L214">        List&lt;FireStation&gt; fireStations = datas.getFireStations();</span>
+
+<span class="fc" id="L216">        return fireStations.stream()</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">                .filter(fireStation -&gt; stationNumber == fireStation.getStation())</span>
+<span class="fc" id="L218">                .map(FireStation::getAddress)</span>
+<span class="fc" id="L219">                .collect(Collectors.toSet());</span>
+    }
+
+    /**
+     * Retrieves the station number for a given address.
+     * 
+     * @param address the address for which the station number should be retrieved
+     * @return the station number that covers the given address
+     * @throws IllegalArgumentException if no station exists for the given address
+     */
+    public int getStationByAddress(String address){
+<span class="fc" id="L230">        Datas datas = dataRepository.readData();</span>
+
+<span class="fc" id="L232">        FireStation fireStation = datas.getFireStations().stream()</span>
+<span class="fc" id="L233">            .filter(station -&gt; station.getAddress().equals(address))</span>
+<span class="fc" id="L234">            .findFirst()</span>
+<span class="pc" id="L235">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;No fire station found for address: &quot; + address));</span>
+
+<span class="fc" id="L237">        return fireStation.getStation();</span>
+    }
+
+    /**
+     * Retrieves a list of children living at a given address.
+     * 
+     * @param address the address to check for children
+     * @return a ChildAlertResponse containing children and other people living at the address
+     */
+    public ChildAlertResponse getChildrenByAdress(String address){
+<span class="fc" id="L247">        logger.debug(&quot;Getting children by address({})&quot;, address);</span>
+
+<span class="fc" id="L249">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L250">        PersonService personService = new PersonService(dataRepository);</span>
+
+<span class="fc" id="L252">        Set&lt;Person&gt; persons = datas.getPersons().stream()</span>
+<span class="fc" id="L253">            .filter(person -&gt; person.getAddress().equals(address))</span>
+<span class="fc" id="L254">            .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L256">        Set&lt;ChildAlertChildDTO&gt; children = persons.stream()</span>
+<span class="fc" id="L257">            .filter(person -&gt; {</span>
+                try {
+<span class="fc" id="L259">                    return personService.isChild(person);</span>
+<span class="nc" id="L260">                } catch (IOException e) {</span>
+<span class="nc" id="L261">                    logger.error(&quot;Error checking if person is a child&quot;);</span>
+<span class="nc" id="L262">                    return false;</span>
+                }
+            })
+<span class="fc" id="L265">            .map(person -&gt; {</span>
+<span class="fc" id="L266">                    return new ChildAlertChildDTO(</span>
+<span class="fc" id="L267">                            person.getFirstName(),</span>
+<span class="fc" id="L268">                            person.getLastName(),</span>
+<span class="fc" id="L269">                            personService.getAge(person));</span>
+            })
+<span class="fc" id="L271">            .filter(Objects::nonNull)</span>
+<span class="fc" id="L272">            .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L274">        Set&lt;Person&gt; otherPersons = persons.stream()</span>
+<span class="fc" id="L275">            .filter(person -&gt; {</span>
+                try {
+<span class="fc bfc" id="L277" title="All 2 branches covered.">                    return !personService.isChild(person);</span>
+<span class="nc" id="L278">                } catch (IOException e) {</span>
+<span class="nc" id="L279">                    logger.error(&quot;Error checking if person is a child&quot;);</span>
+<span class="nc" id="L280">                    return false;</span>
+                }
+            })
+<span class="fc" id="L283">            .collect(Collectors.toSet());</span>
+        
+<span class="fc" id="L285">        logger.info(&quot;List of children living at {}: {}; Other people living there: {}&quot;, address, children, otherPersons);</span>
+<span class="fc" id="L286">        return new ChildAlertResponse(children, otherPersons);</span>
+    }
+
+    /**
+     * Retrieves the list of persons with medical information by a given address.
+     * 
+     * @param address the address to check for persons
+     * @return a set of PersonWithMedicalDTO containing persons with medical information at the address
+     */
+    public Set&lt;PersonWithMedicalDTO&gt; getPersonSetByAddress(String address){
+<span class="fc" id="L296">        logger.debug(&quot;Getting persons(set) by address({})&quot;, address);</span>
+
+<span class="fc" id="L298">        Datas datas = dataRepository.readData();</span>
+<span class="fc" id="L299">        PersonService personService = new PersonService(dataRepository);</span>
+
+<span class="fc" id="L301">        Set&lt;Person&gt; persons = datas.getPersons().stream()</span>
+<span class="fc" id="L302">            .filter(person -&gt; person.getAddress().equals(address))</span>
+<span class="fc" id="L303">            .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L305">        Map&lt;Person, MedicalRecord&gt; personsMap = personService.mapPersonToMedicalRecord(persons);</span>
+
+<span class="fc" id="L307">        Set&lt;PersonWithMedicalDTO&gt; personsDTO = personsMap.entrySet().stream()</span>
+<span class="fc" id="L308">            .map(entry -&gt; {</span>
+<span class="fc" id="L309">                    return new PersonWithMedicalDTO(</span>
+<span class="fc" id="L310">                        entry.getKey().getFirstName(),</span>
+<span class="fc" id="L311">                        entry.getKey().getLastName(),</span>
+<span class="fc" id="L312">                        entry.getKey().getPhone(),</span>
+<span class="fc" id="L313">                        personService.getAge(entry.getKey()),</span>
+<span class="fc" id="L314">                        entry.getValue().getMedications(),</span>
+<span class="fc" id="L315">                        entry.getValue().getAllergies());</span>
+            })
+<span class="fc" id="L317">            .filter(Objects::nonNull)</span>
+<span class="fc" id="L318">            .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L320">        return personsDTO;</span>
+    }
+    
+    /**
+     * Retrieves the list of persons living at a given address, along with the fire station information.
+     * 
+     * @param address the address to retrieve persons from
+     * @return a FireResponse containing persons at the address and their fire station
+     */
+    public FireResponse getPersonsByAddress(String address){
+<span class="fc" id="L330">        logger.debug(&quot;Getting persons by address({})&quot;, address);</span>
+
+<span class="fc" id="L332">        logger.info(&quot;List of people living at {}: &quot;, address, getPersonSetByAddress(address));</span>
+<span class="fc" id="L333">        return new FireResponse(getPersonSetByAddress(address), getStationByAddress(address));</span>
+    }
+
+    /**
+     * Retrieves the list of homes covered by multiple stations.
+     * 
+     * @param stationNumbers a list of station numbers to retrieve homes for
+     * @return a list of FloodDTO containing homes covered by each station
+     */
+    public List&lt;FloodDTO&gt; getHomesByStations(List&lt;Integer&gt; stationNumbers){
+<span class="fc" id="L343">        logger.debug(&quot;Getting homes by stations({})&quot;, stationNumbers);</span>
+
+<span class="fc" id="L345">        List&lt;FloodDTO&gt; floods = stationNumbers.stream()</span>
+<span class="fc" id="L346">            .map(stationNumber -&gt; {</span>
+<span class="fc" id="L347">                Set&lt;String&gt; stationAddresses = new HashSet&lt;String&gt;();</span>
+<span class="fc" id="L348">                stationAddresses = getAdressesByStation(stationNumber);</span>
+               
+<span class="fc" id="L350">                Map&lt;String, Set&lt;PersonWithMedicalDTO&gt;&gt; homes = stationAddresses.stream()</span>
+<span class="fc" id="L351">                    .collect(Collectors.toMap(</span>
+<span class="fc" id="L352">                        address -&gt; address,</span>
+                        address -&gt; {
+<span class="fc" id="L354">                            return getPersonSetByAddress(address); }</span>
+                    ));
+            
+<span class="fc" id="L357">                return new FloodDTO(stationNumber, homes);</span>
+            })
+<span class="fc" id="L359">            .collect(Collectors.toList());</span>
+
+<span class="fc" id="L361">            logger.info(&quot;Homes covered by station: {}&quot;, floods);</span>
+<span class="fc" id="L362">            return floods;</span>
+    }
+
+    /**
+     * Checks if an address is already mapped to a fire station.
+     * 
+     * @param address the address to check
+     * @return true if the address is already mapped, false otherwise
+     */
+    public boolean isMapped(String address){
+<span class="fc" id="L372">        return dataRepository.readData().getFireStations()</span>
+<span class="fc" id="L373">                .stream().map(FireStation::getAddress).toList()</span>
+<span class="fc" id="L374">                .contains(address);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
