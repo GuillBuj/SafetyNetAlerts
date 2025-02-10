@@ -109,8 +109,8 @@ public class PersonServiceTest {
         verify(dataRepository, times(2)).writeData(any(Datas.class));//person+medicalRecord
         assertFalse(datas.getPersons().contains(person));
         assertFalse(datas.getMedicalRecords().stream()
-                    .anyMatch(medicalRecord -> medicalRecord.getFirstName() == person.getFirstName()
-                                        && medicalRecord.getLastName() == person.getLastName()));
+                    .anyMatch(medicalRecord -> medicalRecord.getFirstName().equals(person.getFirstName())
+                                        && medicalRecord.getLastName().equals(person.getLastName())));
     }
 
     @Test

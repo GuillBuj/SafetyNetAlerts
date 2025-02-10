@@ -127,7 +127,7 @@ public class FireStationControllerIT {
                 .andExpect(status().isOk());
 
         assertFalse(dataRepository.readData().getFireStations().stream()
-                .anyMatch(fStation -> fStation.getAddress() == address));
+                .anyMatch(fStation -> fStation.getAddress().equals(address)));
     }
 
     @Test

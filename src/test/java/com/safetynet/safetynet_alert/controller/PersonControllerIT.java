@@ -111,11 +111,11 @@ public class PersonControllerIT {
                 .andExpect(status().isOk());
 
         assertFalse(dataRepository.readData().getPersons().stream()
-                    .anyMatch(person -> person.getFirstName() == personDTO.firstName()
-                                    && person.getLastName() == personDTO.lastName()));
+                    .anyMatch(person -> person.getFirstName().equals(personDTO.firstName())
+                                    && person.getLastName().equals(personDTO.lastName())));
         assertFalse(dataRepository.readData().getMedicalRecords().stream()
-                    .anyMatch(medicalRecord -> medicalRecord.getFirstName() == personDTO.firstName()
-                        && medicalRecord.getLastName() == personDTO.lastName()));
+                    .anyMatch(medicalRecord -> medicalRecord.getFirstName().equals(personDTO.firstName())
+                        && medicalRecord.getLastName().equals(personDTO.lastName())));
     }
 
     @Test
