@@ -7,7 +7,7 @@ SafetyNet Alerts is a Spring Boot-based application designed for emergency manag
 ## Documentation
 
 - [Jacoco Documentation](https://GuillBuj.github.io/SafetyNetAlerts/jacoco/)
-- [Surefire Documentation](https://GuillBuj.github.io/SafetyNetAlerts/surefire/)
+- [Surefire Documentation](https://GuillBuj.github.io/SafetyNetAlerts/surefire-reports/)
 - [Spring Boot Documentation](https://GuillBuj.github.io/SafetyNetAlerts/apidocs/)
 
 
