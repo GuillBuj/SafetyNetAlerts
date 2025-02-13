@@ -370,8 +370,9 @@ public class FireStationService {
      */
     public boolean isMapped(String address){
         return dataRepository.readData().getFireStations()
-                .stream().map(FireStation::getAddress).toList()
-                .contains(address);
+                    .stream()
+                    .map(FireStation::getAddress).toList()
+                    .contains(address);
     }
 
 }
